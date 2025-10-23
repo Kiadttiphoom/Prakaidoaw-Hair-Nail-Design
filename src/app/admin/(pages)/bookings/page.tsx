@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calendar, Clock, User, Scissors, Search, Filter, Plus, Phone, Mail, CheckCircle, XCircle, AlertCircle, Edit, Trash2, Eye } from 'lucide-react';
 
 type BookingStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled';
@@ -20,7 +20,7 @@ interface Booking {
   notes?: string;
 }
 
-export default function AdminBooking() {
+export default function BookingPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<BookingStatus | 'all'>('all');
   const [showAddModal, setShowAddModal] = useState(false);

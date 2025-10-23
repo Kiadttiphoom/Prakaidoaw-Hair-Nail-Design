@@ -3,7 +3,7 @@
 import React from 'react';
 import { Calendar, Users, Scissors, Clock, UserCheck, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 
-export default function AdminDashboard() {
+export default function DashboardPage() {
   const stats = [
     { 
       label: 'รอยืนยัน', 

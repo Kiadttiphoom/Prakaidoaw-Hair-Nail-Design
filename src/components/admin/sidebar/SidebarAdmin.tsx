@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { LayoutDashboard, Calendar, Scissors, Users, Clock, UserCircle, LogOut } from 'lucide-react';
 
-export default function AdminSidebar() {
+export default function SidebarAdmin() {
   const menuItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/bookings', label: 'จัดการรายการจอง', icon: Calendar },
