@@ -1,7 +1,15 @@
 "use client";
-
-import { useState, useEffect } from 'react';
-import { Scissors, Star, Calendar, Instagram, Facebook, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { useState, useEffect } from "react";
+import {
+  Scissors,
+  Star,
+  Calendar,
+  Instagram,
+  Facebook,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GalleryLightbox from "@/components/Gallery/GalleryLightbox";
 
@@ -14,116 +22,134 @@ export default function HomePage() {
 
   const heroSlides = [
     {
-      image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=1920&q=80',
-      title: 'Timeless',
-      subtitle: 'Beauty',
-      description: 'สัมผัสประสบการณ์การดูแลผมระดับพรีเมียม'
+      image:
+        "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=1920&q=80",
+      title: "Timeless",
+      subtitle: "Beauty",
+      description: "สัมผัสประสบการณ์การดูแลผมระดับพรีเมียม",
     },
     {
-      image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80',
-      title: 'Expert',
-      subtitle: 'Care',
-      description: 'ช่างผู้เชี่ยวชาญพร้อมให้คำปรึกษา'
+      image:
+        "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80",
+      title: "Expert",
+      subtitle: "Care",
+      description: "ช่างผู้เชี่ยวชาญพร้อมให้คำปรึกษา",
     },
     {
-      image: 'https://images.unsplash.com/photo-1522337094846-8a818192de1f?w=1920&q=80',
-      title: 'Premium',
-      subtitle: 'Quality',
-      description: 'ผลิตภัณฑ์คุณภาพสูงจากทั่วโลก'
-    }
+      image:
+        "https://images.unsplash.com/photo-1522337094846-8a818192de1f?w=1920&q=80",
+      title: "Premium",
+      subtitle: "Quality",
+      description: "ผลิตภัณฑ์คุณภาพสูงจากทั่วโลก",
+    },
   ];
 
   const services = [
     {
-      title: 'Haircut',
-      description: 'ตัดผมและออกแบบทรงผมที่เข้ากับบุคลิกของคุณ',
-      price: '฿450 - ฿1,200',
-      image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80'
+      title: "Haircut",
+      description: "ตัดผมและออกแบบทรงผมที่เข้ากับบุคลิกของคุณ",
+      price: "฿450 - ฿1,200",
+      image:
+        "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80",
     },
     {
-      title: 'Coloring',
-      description: 'ย้อมสี ไฮไลท์ บาลายาจ ด้วยสีระดับพรีเมียม',
-      price: '฿1,800 - ฿4,500',
-      image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80'
+      title: "Coloring",
+      description: "ย้อมสี ไฮไลท์ บาลายาจ ด้วยสีระดับพรีเมียม",
+      price: "฿1,800 - ฿4,500",
+      image:
+        "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80",
     },
     {
-      title: 'Treatment',
-      description: 'บำรุงผมเข้มข้น ฟื้นฟูเส้นผมให้แข็งแรง',
-      price: '฿800 - ฿2,000',
-      image: 'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=800&q=80'
+      title: "Treatment",
+      description: "บำรุงผมเข้มข้น ฟื้นฟูเส้นผมให้แข็งแรง",
+      price: "฿800 - ฿2,000",
+      image:
+        "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=800&q=80",
     },
     {
-      title: 'Hair Spa',
-      description: 'ผ่อนคลายพร้อมบำรุงผมอย่างล้ำลึก',
-      price: '฿1,200 - ฿2,800',
-      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'
+      title: "Hair Spa",
+      description: "ผ่อนคลายพร้อมบำรุงผมอย่างล้ำลึก",
+      price: "฿1,200 - ฿2,800",
+      image:
+        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
     },
     {
-      title: 'Styling',
-      description: 'จัดแต่งทรงผมสำหรับงานพิเศษและโอกาสสำคัญ',
-      price: '฿600 - ฿1,500',
-      image: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&q=80'
+      title: "Styling",
+      description: "จัดแต่งทรงผมสำหรับงานพิเศษและโอกาสสำคัญ",
+      price: "฿600 - ฿1,500",
+      image:
+        "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&q=80",
     },
     {
-      title: 'Perm',
-      description: 'ดัดผม เพิ่มวอลุ่ม สร้างลูกเวฟสวยธรรมชาติ',
-      price: '฿2,200 - ฿5,000',
-      image: 'https://images.unsplash.com/photo-1595475884562-073c30d45670?w=800&q=80'
-    }
+      title: "Perm",
+      description: "ดัดผม เพิ่มวอลุ่ม สร้างลูกเวฟสวยธรรมชาติ",
+      price: "฿2,200 - ฿5,000",
+      image:
+        "https://images.unsplash.com/photo-1595475884562-073c30d45670?w=800&q=80",
+    },
   ];
 
   const testimonials = [
     {
-      name: 'คุณพิมพ์ชนก ส.',
+      name: "คุณพิมพ์ชนก ส.",
       rating: 5,
-      comment: 'ประทับใจมากค่ะ ช่างใส่ใจทุกรายละเอียด ผมออกมาสวยเป๊ะตรงใจ บรรยากาศในร้านก็ดีมาก จะกลับมาใช้บริการอีกแน่นอน',
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80'
+      comment:
+        "ประทับใจมากค่ะ ช่างใส่ใจทุกรายละเอียด ผมออกมาสวยเป๊ะตรงใจ บรรยากาศในร้านก็ดีมาก จะกลับมาใช้บริการอีกแน่นอน",
+      image:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
     },
     {
-      name: 'คุณณัฐวุฒิ จ.',
+      name: "คุณณัฐวุฒิ จ.",
       rating: 5,
-      comment: 'บรรยากาศดี สะอาด เป็นส่วนตัว ช่างให้คำแนะนำดีมาก คุ้มค่ากับราคาที่จ่ายไป ครั้งต่อไปจะมาอีกแน่นอนครับ',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80'
+      comment:
+        "บรรยากาศดี สะอาด เป็นส่วนตัว ช่างให้คำแนะนำดีมาก คุ้มค่ากับราคาที่จ่ายไป ครั้งต่อไปจะมาอีกแน่นอนครับ",
+      image:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
     },
     {
-      name: 'คุณอารยา ว.',
+      name: "คุณอารยา ว.",
       rating: 5,
-      comment: 'ย้อมสีออกมาสวยมาก คุณภาพดี ไม่ทำลายเส้นผม พนักงานบริการดีเยี่ยม แนะนำเลยค่ะ ราคาดีด้วย',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80'
-    }
+      comment:
+        "ย้อมสีออกมาสวยมาก คุณภาพดี ไม่ทำลายเส้นผม พนักงานบริการดีเยี่ยม แนะนำเลยค่ะ ราคาดีด้วย",
+      image:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
+    },
   ];
 
   const stylists = [
     {
-      name: 'พี่มิ้นท์',
-      specialty: 'Color Specialist',
-      experience: '12 ปี',
-      description: 'เชี่ยวชาญด้านการย้อมสีและไฮไลท์',
-      image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80'
+      name: "พี่มิ้นท์",
+      specialty: "Color Specialist",
+      experience: "12 ปี",
+      description: "เชี่ยวชาญด้านการย้อมสีและไฮไลท์",
+      image:
+        "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80",
     },
     {
-      name: 'พี่เบสท์',
-      specialty: 'Cut & Style Expert',
-      experience: '10 ปี',
-      description: 'ผู้เชี่ยวชาญด้านการตัดและจัดแต่งทรงผม',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80'
+      name: "พี่เบสท์",
+      specialty: "Cut & Style Expert",
+      experience: "10 ปี",
+      description: "ผู้เชี่ยวชาญด้านการตัดและจัดแต่งทรงผม",
+      image:
+        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80",
     },
     {
-      name: 'พี่ปอนด์',
-      specialty: 'Treatment Pro',
-      experience: '8 ปี',
-      description: 'ผู้เชี่ยวชาญด้านการบำรุงและฟื้นฟูผม',
-      image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80'
-    }
+      name: "พี่ปอนด์",
+      specialty: "Treatment Pro",
+      experience: "8 ปี",
+      description: "ผู้เชี่ยวชาญด้านการบำรุงและฟื้นฟูผม",
+      image:
+        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80",
+    },
   ];
 
   const gallery = [
-    'https://images.unsplash.com/photo-1522337094846-8a818192de1f?w=600&q=80',
-    'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&q=80',
-    'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80',
-    'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=600&q=80',
-    'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&q=80',
-    'https://images.unsplash.com/photo-1595475884562-073c30d45670?w=600&q=80'
+    "https://images.unsplash.com/photo-1522337094846-8a818192de1f?w=600&q=80",
+    "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&q=80",
+    "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80",
+    "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=600&q=80",
+    "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&q=80",
+    "https://images.unsplash.com/photo-1595475884562-073c30d45670?w=600&q=80",
   ];
 
   useEffect(() => {
@@ -142,7 +168,7 @@ export default function HomePage() {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.15 },
     );
 
     // ✅ เพิ่ม id "anim-stylist-0" ถึง "anim-stylist-2" ให้ observer เห็นตั้งแต่แรก
@@ -151,30 +177,40 @@ export default function HomePage() {
     });
 
     // ✅ บังคับเปิด section stylists ทันทีเมื่อโหลด
-    setIsVisible((prev) => ({ ...prev, "anim-stylists-header": true, "anim-stylist-0": true, "anim-stylist-1": true, "anim-stylist-2": true }));
+    setIsVisible((prev) => ({
+      ...prev,
+      "anim-stylists-header": true,
+      "anim-stylist-0": true,
+      "anim-stylist-1": true,
+      "anim-stylist-2": true,
+    }));
 
     return () => observer.disconnect();
   }, []);
 
-
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  const nextSlide = () =>
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  const prevSlide = () =>
+    setCurrentSlide(
+      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length,
+    );
 
   const handleToggle = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
-
   return (
     <div className="min-h-screen bg-white">
-
       {/* Hero Section */}
       <div className="relative h-screen flex items-center justify-center overflow-hidden">
         {heroSlides.map((slide, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-all duration-[2500ms] ease-out ${index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-              }`}
+            className={`absolute inset-0 transition-all duration-[2500ms] ease-out ${
+              index === currentSlide
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-105"
+            }`}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-white/50 to-white z-10"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent z-10"></div>
@@ -187,44 +223,60 @@ export default function HomePage() {
         ))}
 
         <div className="relative z-20 text-center px-8 max-w-6xl">
-          <div className="mb-12 overflow-hidden">
+          <div className="sm:mb-12 mb-6 overflow-hidden">
             <div className="inline-flex items-center gap-3 mb-4 animate-[fadeIn_2s_ease-out]">
               <div className="w-16 h-px bg-gradient-to-r from-transparent via-gray-400 to-transparent"></div>
-              <p className="text-gray-400 text-xs tracking-[0.5em] font-light uppercase">
+              <p className="text-gray-400 sm:text-xs text-sm tracking-[0.5em] font-light uppercase">
                 Professional Hair Salon
               </p>
               <div className="w-16 h-px bg-gradient-to-r from-transparent via-gray-400 to-transparent"></div>
             </div>
           </div>
 
-          <h1 className="mb-4 animate-[fadeInUp_1.5s_ease-out_0.3s_both]">
-            <span className="block text-7xl md:text-9xl text-gray-900 font-extralight tracking-tight leading-none mb-4">
+          <h1 className="mb-6 sm:mb-4 animate-[fadeInUp_1.5s_ease-out_0.3s_both]">
+            <span className="block text-5xl sm:text-7xl md:text-9xl text-gray-900 font-extralight tracking-tight leading-none mb-4">
               {heroSlides[currentSlide].title}
             </span>
-            <span className="block text-6xl md:text-8xl text-gray-700 font-extralight tracking-tight leading-none">
+            <span className="block text-5xl sm:text-6xl md:text-8xl text-gray-700 font-extralight tracking-tight leading-none">
               {heroSlides[currentSlide].subtitle}
             </span>
           </h1>
 
           <div className="max-w-2xl mx-auto mb-16 animate-[fadeInUp_1.5s_ease-out_0.6s_both]">
-            <p className="text-gray-600 text-xl font-light leading-relaxed tracking-wide mb-3">
+            <p className="text-gray-600 text-sm sm:text-xl font-light leading-relaxed tracking-wide mb-3">
               {heroSlides[currentSlide].description}
             </p>
-            <p className="text-gray-500 text-base font-light">
+            <p className="text-gray-500 text-base font-light text-sm sm:text-xl">
               ด้วยความใส่ใจในทุกรายละเอียด
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5 animate-[fadeInUp_1.5s_ease-out_0.9s_both]">
-            <button className="group bg-gray-900 text-white px-16 py-6 rounded-full text-sm tracking-[0.25em] hover:bg-gray-800 hover:shadow-2xl hover:shadow-gray-900/30 transition-all duration-700 inline-flex items-center gap-4 font-light">
-              <Calendar className="w-5 h-5 group-hover:rotate-12 transition-transform duration-700" strokeWidth={1.5} />
+            <button className="group bg-gray-900 text-white px-10 sm:px-16 py-4 sm:py-6 rounded-full text-sm tracking-[0.25em] hover:bg-gray-800 hover:shadow-2xl hover:shadow-gray-900/30 transition-all duration-700 inline-flex items-center gap-4 font-light">
+              <Calendar
+                className="w-5 h-5 group-hover:rotate-12 transition-transform duration-700"
+                strokeWidth={1.5}
+              />
               จองคิวตอนนี้
-              <Sparkles className="w-4 h-4 group-hover:scale-125 transition-transform duration-700" strokeWidth={1.5} />
+              <Sparkles
+                className="w-4 h-4 group-hover:scale-125 transition-transform duration-700"
+                strokeWidth={1.5}
+              />
             </button>
-            <button className="group bg-white/90 backdrop-blur-sm text-gray-900 px-16 py-6 rounded-full text-sm tracking-[0.25em] hover:bg-white hover:shadow-xl transition-all duration-700 inline-flex items-center gap-4 font-light border border-gray-200">
+            <button className="group bg-white/90 backdrop-blur-sm text-gray-900 px-10 sm:px-16 py-4 sm:py-6 rounded-full text-sm tracking-[0.25em] hover:bg-white hover:shadow-xl transition-all duration-700 inline-flex items-center gap-4 font-light border border-gray-200">
               ดูบริการทั้งหมด
-              <svg className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+              <svg
+                className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-700"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+                />
               </svg>
             </button>
           </div>
@@ -233,15 +285,21 @@ export default function HomePage() {
         {/* Controls */}
         <button
           onClick={prevSlide}
-          className="absolute left-10 top-1/2 -translate-y-1/2 z-30 bg-white/95 backdrop-blur-md hover:bg-white p-5 rounded-full transition-all duration-500 hover:scale-110 shadow-xl border border-gray-100/50 group"
+          className="absolute left-5 sm:left-10 top-1/2 sm:top-1/2 -translate-y-1/2 z-30 bg-white/95 backdrop-blur-md hover:bg-white p-3 sm:p-5 rounded-full transition-all duration-500 hover:scale-110 shadow-xl border border-gray-100/50 group"
         >
-          <ChevronLeft className="w-6 h-6 text-gray-900 group-hover:-translate-x-0.5 transition-transform duration-500" strokeWidth={1.5} />
+          <ChevronLeft
+            className="sm:w-6 sm:h-6 w-3 h-3 text-gray-900 group-hover:-translate-x-0.5 transition-transform duration-500"
+            strokeWidth={1.5}
+          />
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-10 top-1/2 -translate-y-1/2 z-30 bg-white/95 backdrop-blur-md hover:bg-white p-5 rounded-full transition-all duration-500 hover:scale-110 shadow-xl border border-gray-100/50 group"
+          className="absolute right-5 top-1/2 -translate-y-1/2 z-30 bg-white/95 backdrop-blur-md hover:bg-white p-3 sm:p-5 rounded-full transition-all duration-500 hover:scale-110 shadow-xl border border-gray-100/50 group"
         >
-          <ChevronRight className="w-6 h-6 text-gray-900 group-hover:translate-x-0.5 transition-transform duration-500" strokeWidth={1.5} />
+          <ChevronRight
+            className="sm:w-6 sm:h-6 w-3 h-3 text-gray-900 group-hover:translate-x-0.5 transition-transform duration-500"
+            strokeWidth={1.5}
+          />
         </button>
 
         {/* Dots */}
@@ -250,23 +308,34 @@ export default function HomePage() {
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`h-2 rounded-full transition-all duration-700 ${index === currentSlide ? 'w-12 bg-gray-900' : 'w-2 bg-gray-400 hover:bg-gray-600'
-                }`}
+              className={`h-2 rounded-full transition-all duration-700 ${
+                index === currentSlide
+                  ? "w-12 bg-gray-900"
+                  : "w-2 bg-gray-400 hover:bg-gray-600"
+              }`}
             />
           ))}
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 animate-[bounce_3s_infinite] hidden md:block" style={{ bottom: '100px' }}>
+        <div
+          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 animate-[bounce_3s_infinite] hidden md:block"
+          style={{ bottom: "100px" }}
+        >
           <div className="flex flex-col items-center gap-3">
-            <span className="text-xs text-gray-400 tracking-[0.3em] font-light uppercase">Scroll</span>
+            <span className="text-xs text-gray-400 tracking-[0.3em] font-light uppercase">
+              Scroll
+            </span>
             <div className="w-px h-16 bg-gradient-to-b from-gray-400 via-gray-300 to-transparent"></div>
           </div>
         </div>
       </div>
 
       {/* Services */}
-      <section id="services" className="sm:py-24 py-12 bg-gradient-to-b from-white via-gray-50/40 to-white relative overflow-hidden">
+      <section
+        id="services"
+        className="sm:py-24 py-12 bg-gradient-to-b from-white via-gray-50/40 to-white relative overflow-hidden"
+      >
         <div className="absolute top-32 -left-32 w-[600px] h-[600px] bg-gradient-to-br from-gray-200/40 via-gray-100/20 to-transparent rounded-full blur-3xl"></div>
         <div className="absolute bottom-32 -right-32 w-[700px] h-[700px] bg-gradient-to-tl from-gray-300/30 via-gray-200/20 to-transparent rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-gradient-radial from-gray-100/15 to-transparent rounded-full blur-3xl"></div>
@@ -274,17 +343,26 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto sm:px-8 px-4 relative z-10">
           <div
             id="anim-services"
-            className={`text-center sm:mb-28 mb-14 transition-all duration-1200 ${isVisible['anim-services'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'
-              }`}
+            className={`text-center sm:mb-28 mb-14 transition-all duration-1200 ${
+              isVisible["anim-services"]
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-16"
+            }`}
           >
-            <div className="inline-block mb-10">
-              <Scissors className="w-12 h-12 text-gray-300 mx-auto mb-8 animate-[spin_20s_linear_infinite]" strokeWidth={0.7} style={{ animationDirection: 'reverse' }} />
+            <div className="inline-block sm:mb-10 mb-5">
+              <Scissors
+                className="w-12 h-12 text-gray-300 mx-auto mb-8 animate-[spin_20s_linear_infinite]"
+                strokeWidth={0.7}
+                style={{ animationDirection: "reverse" }}
+              />
             </div>
-            <p className="text-gray-400 text-xs tracking-[0.5em] mb-10 font-light uppercase">Our Services</p>
-            <h2 className="text-7xl md:text-8xl text-gray-900 font-extralight tracking-tight mb-8 leading-none">
+            <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">
+              Our Services
+            </p>
+            <h2 className="text-4xl sm:text-6xl text-gray-900 font-extralight tracking-tight mb-8 leading-none">
               บริการของเรา
             </h2>
-            <p className="text-gray-500 text-lg font-light max-w-3xl mx-auto leading-relaxed mb-10">
+            <p className="text-gray-500 text-base sm:text-lg font-light max-w-3xl mx-auto leading-relaxed mb-10">
               บริการครบวงจร ด้วยมาตรฐานระดับสากล และความใส่ใจในทุกขั้นตอน
             </p>
             <div className="w-32 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto"></div>
@@ -295,10 +373,11 @@ export default function HomePage() {
               <div
                 key={index}
                 id={`anim-service-${index}`}
-                className={`group relative bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-1000 border border-gray-100/70 hover:border-gray-200 md:hover:-translate-y-4 ${isVisible[`anim-service-${index}`]
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-16'
-                  }`}
+                className={`group relative bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-1000 border border-gray-100/70 hover:border-gray-200 md:hover:-translate-y-4 ${
+                  isVisible[`anim-service-${index}`]
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-16"
+                }`}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-900/0 via-gray-900/0 to-gray-900/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none z-10"></div>
@@ -328,10 +407,22 @@ export default function HomePage() {
                   </p>
 
                   <div className="flex items-center justify-between">
-                    <p className="text-lg sm:text-xl md:text-2xl text-gray-900 font-light tracking-wide">{service.price}</p>
+                    <p className="text-sm sm:text-xl md:text-2xl text-gray-900 font-light tracking-wide">
+                      {service.price}
+                    </p>
                     <button className="text-gray-400 group-hover:text-gray-900 group-hover:translate-x-2 md:group-hover:translate-x-3 transition-all duration-700">
-                      <svg className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                      <svg
+                        className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -339,7 +430,6 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-
         </div>
       </section>
 
@@ -353,10 +443,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto sm:px-8 px-4 relative z-10">
           <div
             id="anim-testimonials"
-            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible['anim-testimonials']
-              ? 'opacity-100 translate-y-0'
-              : 'opacity-0 translate-y-16'
-              }`}
+            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${
+              isVisible["anim-testimonials"]
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-16"
+            }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.4em] sm:tracking-[0.5em] mb-6 sm:mb-10 font-light uppercase">
               Testimonials
@@ -370,23 +461,25 @@ export default function HomePage() {
             <div className="w-32 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto"></div>
           </div>
 
-          {/* ✅ grid responsive */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
+          {/* มือถือ: flex scroll, เดสก์ท็อป: grid */}
+          <div className="flex sm:grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12 overflow-x-auto sm:overflow-visible snap-x snap-mandatory scrollbar-hide">
             {testimonials.map((item, index) => (
               <div
                 key={index}
                 id={`anim-testimonial-${index}`}
-                className={`bg-gradient-to-br from-gray-50/80 to-white/80 backdrop-blur-sm 
-          p-8 sm:p-10 md:p-12 rounded-[1.5rem] md:rounded-[2rem]
-          hover:shadow-2xl transition-all duration-1000 border border-gray-100/80 
-          hover:border-gray-200 md:hover:-translate-y-3 text-center
-          ${isVisible[`anim-testimonial-${index}`]
-                    ? 'opacity-100 scale-100'
-                    : 'opacity-0 scale-95'
-                  }`}
+                className={`
+            bg-gradient-to-br from-gray-50/80 to-white/80 backdrop-blur-sm
+            p-8 sm:p-10 md:p-12 rounded-[1.5rem] md:rounded-[2rem]
+            hover:shadow-2xl transition-all duration-1000 border border-gray-100/80
+            hover:border-gray-200 md:hover:-translate-y-3 text-center
+            shrink-0 w-[85%] sm:w-auto snap-center
+            ${
+                isVisible["anim-testimonials"]
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-95"
+              }`}
                 style={{ transitionDelay: `${index * 180}ms` }}
               >
-                {/* ✅ รูป + ชื่อ + ดาว */}
                 <div className="flex flex-col items-center mb-8">
                   <img
                     src={item.image}
@@ -407,7 +500,6 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* ✅ ข้อความรีวิว */}
                 <p className="text-gray-600 font-light leading-relaxed sm:leading-[1.9] text-base sm:text-lg">
                   "{item.comment}"
                 </p>
@@ -430,18 +522,19 @@ export default function HomePage() {
           {/* Header */}
           <div
             id="anim-stylists-header"
-            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible["anim-stylists-header"]
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-16"
-              }`}
+            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${
+              isVisible["anim-stylists-header"]
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-16"
+            }`}
           >
-            <p className="text-gray-400 text-xs tracking-[0.5em] mb-10 font-light uppercase">
+            <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">
               Meet Our Team
             </p>
-            <h2 className="text-6xl md:text-7xl text-gray-900 font-extralight tracking-tight mb-8 leading-none">
+            <h2 className="text-4xl sm:text-6xl  text-gray-900 font-extralight tracking-tight mb-8 leading-none">
               ช่างผมมืออาชีพ
             </h2>
-            <p className="text-gray-500 text-lg font-light max-w-2xl mx-auto leading-relaxed mb-10">
+            <p className="text-gray-500 text-base sm:text-lg font-light max-w-2xl mx-auto leading-relaxed mb-10">
               ทีมผู้เชี่ยวชาญด้านการดูแลเส้นผมที่พร้อมดูแลคุณ
             </p>
             <div className="w-32 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto"></div>
@@ -457,32 +550,36 @@ export default function HomePage() {
                   <div
                     key={index}
                     onClick={() => handleToggle(index)}
-                    className={`group text-center flex-shrink-0 w-[250px] sm:w-[300px] snap-center transition-all duration-700 ${isVisible[`anim-stylist-${index}`]
-                      ? "opacity-100 translate-x-0"
-                      : "opacity-0 -translate-x-12"
-                      }`}
+                    className={`group text-center flex-shrink-0 w-[250px] sm:w-[300px] snap-center transition-all duration-700 ${
+                      isVisible[`anim-stylist-${index}`]
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-12"
+                    }`}
                   >
                     <div className="relative mb-8 overflow-hidden rounded-[2rem] shadow-lg">
                       <img
                         src={stylist.image}
                         alt={stylist.name}
-                        className={`w-full h-[400px] object-cover transition-all duration-[1500ms] ease-out ${isActive
-                          ? "scale-105 grayscale-0"
-                          : "grayscale group-hover:grayscale-0 group-hover:scale-105"
-                          }`}
+                        className={`w-full h-[400px] object-cover transition-all duration-[1500ms] ease-out ${
+                          isActive
+                            ? "scale-105 grayscale-0"
+                            : "grayscale group-hover:grayscale-0 group-hover:scale-105"
+                        }`}
                       />
                       <div
-                        className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-700 ${isActive
-                          ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-100"
-                          }`}
+                        className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-700 ${
+                          isActive
+                            ? "opacity-100"
+                            : "opacity-0 group-hover:opacity-100"
+                        }`}
                       ></div>
 
                       <div
-                        className={`absolute bottom-0 left-0 right-0 p-6 transition-transform duration-700 ${isActive
-                          ? "translate-y-0"
-                          : "translate-y-full group-hover:translate-y-0"
-                          }`}
+                        className={`absolute bottom-0 left-0 right-0 p-6 transition-transform duration-700 ${
+                          isActive
+                            ? "translate-y-0"
+                            : "translate-y-full group-hover:translate-y-0"
+                        }`}
                       >
                         <div className="bg-white/98 backdrop-blur-xl rounded-[1.5rem] p-6 border border-gray-100/80 shadow-2xl">
                           <h3 className="text-2xl text-gray-900 mb-2 font-extralight tracking-wide">
@@ -502,8 +599,9 @@ export default function HomePage() {
                     </div>
 
                     <div
-                      className={`transition-opacity duration-700 ${isActive ? "opacity-0" : "group-hover:opacity-0"
-                        }`}
+                      className={`transition-opacity duration-700 ${
+                        isActive ? "opacity-0" : "group-hover:opacity-0"
+                      }`}
                     >
                       <h3 className="text-2xl text-gray-900 mb-2 font-extralight tracking-wide">
                         {stylist.name}
@@ -526,10 +624,11 @@ export default function HomePage() {
             {stylists.map((stylist: any, index: number) => (
               <div
                 key={index}
-                className={`group text-center transition-all duration-1000 ${isVisible[`anim-stylist-${index}`]
-                  ? "opacity-100 translate-x-0"
-                  : "opacity-0 -translate-x-12"
-                  }`}
+                className={`group text-center transition-all duration-1000 ${
+                  isVisible[`anim-stylist-${index}`]
+                    ? "opacity-100 translate-x-0"
+                    : "opacity-0 -translate-x-12"
+                }`}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
                 <div className="relative mb-10 overflow-hidden rounded-[2rem] shadow-lg">
@@ -575,26 +674,25 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
       {/* Gallery */}
       <section id="gallery" className="sm:py-24 py-12 bg-white">
         <div className="max-w-7xl mx-auto sm:px-8 px-4">
           {/* Header */}
           <div
             id="anim-gallery-header"
-            className={`text-center mb-24 transition-all duration-1200 ${isVisible["anim-gallery-header"]
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-16"
-              }`}
+            className={`text-center mb-24 transition-all duration-1200 ${
+              isVisible["anim-gallery-header"]
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-16"
+            }`}
           >
-            <p className="text-gray-400 text-xs tracking-[0.5em] mb-10 font-light uppercase">
+            <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">
               Portfolio
             </p>
-            <h2 className="text-6xl md:text-7xl text-gray-900 font-extralight tracking-tight mb-8 leading-none">
+            <h2 className="text-4xl sm:text-6xl  text-gray-900 font-extralight tracking-tight mb-8 leading-none">
               ผลงานของเรา
             </h2>
-            <p className="text-gray-500 text-lg font-light max-w-2xl mx-auto leading-relaxed mb-10">
+            <p className="text-gray-500 text-base sm:text-lg font-light max-w-2xl mx-auto leading-relaxed mb-10">
               ความงามที่เราสร้างสรรค์ร่วมกับลูกค้าของเรา
             </p>
             <div className="w-32 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto"></div>
@@ -607,10 +705,11 @@ export default function HomePage() {
                 key={index}
                 onClick={() => setSelectedImage(image)} // ✅ เปิด popup
                 id={`anim-gallery-${index}`}
-                className={`relative aspect-square overflow-hidden group transition-all duration-1000 rounded-[1.5rem] shadow-lg cursor-pointer ${isVisible[`anim-gallery-${index}`]
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-90"
-                  }`}
+                className={`relative aspect-square overflow-hidden group transition-all duration-1000 rounded-[1.5rem] shadow-lg cursor-pointer ${
+                  isVisible[`anim-gallery-${index}`]
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-90"
+                }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <img
@@ -648,29 +747,34 @@ export default function HomePage() {
         />
       </section>
       <style jsx>{`
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
           }
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(50px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
+          to {
+            opacity: 1;
           }
-          @keyframes bounce {
-            0%, 100% {
-              transform: translateY(0);
-            }
-            50% {
-              transform: translateY(-15px);
-            }
+        }
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(50px);
           }
-        `}</style>
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes bounce {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-15px);
+          }
+        }
+      `}</style>
     </div>
   );
 }

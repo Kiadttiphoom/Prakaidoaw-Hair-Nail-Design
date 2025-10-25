@@ -1,5 +1,12 @@
 "use client";
-import { Scissors, Instagram, Facebook, Phone, Mail, MapPin } from "lucide-react";
+import {
+  Scissors,
+  Instagram,
+  Facebook,
+  Phone,
+  Mail,
+  MapPin,
+} from "lucide-react";
 
 export default function FooterCustomer() {
   return (
@@ -14,38 +21,61 @@ export default function FooterCustomer() {
           <div>
             <div className="flex items-center gap-4 mb-6">
               <div className="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-gray-900 to-gray-700 rounded-full flex items-center justify-center shadow-lg">
-                <Scissors className="w-5 h-5 sm:w-7 sm:h-7 text-white" strokeWidth={1.5} />
+                <Scissors
+                  className="w-5 h-5 sm:w-7 sm:h-7 text-white"
+                  strokeWidth={1.5}
+                />
               </div>
-              <span className="text-2xl sm:text-3xl tracking-[0.25em] text-gray-900 font-extralight">ATELIER</span>
+              <span className="text-2xl sm:text-3xl tracking-[0.25em] text-gray-900 font-extralight">
+                ATELIER
+              </span>
             </div>
             <p className="text-gray-500 text-sm sm:text-base font-light leading-relaxed mb-5 sm:mb-8">
-              ร้านทำผมสไตล์มินิมัล<br />ที่ใส่ใจทุกรายละเอียด
+              ร้านทำผมสไตล์มินิมัล
+              <br />
+              ที่ใส่ใจทุกรายละเอียด
             </p>
             <div className="w-16 sm:w-20 h-px bg-gradient-to-r from-gray-400 to-transparent"></div>
           </div>
 
           {/* เวลาเปิด */}
           <div>
-            <h4 className="text-gray-900 mb-5 sm:mb-8 font-light tracking-wider text-base sm:text-lg">เวลาเปิดทำการ</h4>
+            <h4 className="text-gray-900 mb-5 sm:mb-8 font-light tracking-wider text-base sm:text-lg">
+              เวลาเปิดทำการ
+            </h4>
             <div className="grid grid-cols-2 sm:block gap-x-6 gap-y-3 sm:space-y-5 text-sm sm:text-base font-light text-gray-600 leading-relaxed">
               <div>
-                <span className="block text-gray-500 text-xs sm:text-sm mb-1">จันทร์ - ศุกร์</span>
-                <span className="text-gray-900 text-base sm:text-lg">10:00 - 20:00</span>
+                <span className="block text-gray-500 text-xs sm:text-sm mb-1">
+                  จันทร์ - ศุกร์
+                </span>
+                <span className="text-gray-900 text-base sm:text-lg">
+                  10:00 - 20:00
+                </span>
               </div>
               <div>
-                <span className="block text-gray-500 text-xs sm:text-sm mb-1">เสาร์ - อาทิตย์</span>
-                <span className="text-gray-900 text-base sm:text-lg">09:00 - 19:00</span>
+                <span className="block text-gray-500 text-xs sm:text-sm mb-1">
+                  เสาร์ - อาทิตย์
+                </span>
+                <span className="text-gray-900 text-base sm:text-lg">
+                  09:00 - 19:00
+                </span>
               </div>
             </div>
           </div>
 
           {/* ติดต่อ */}
           <div>
-            <h4 className="text-gray-900 mb-5 sm:mb-8 font-light tracking-wider text-base sm:text-lg">ติดต่อเรา</h4>
+            <h4 className="text-gray-900 mb-5 sm:mb-8 font-light tracking-wider text-base sm:text-lg">
+              ติดต่อเรา
+            </h4>
             <div className="space-y-3 sm:space-y-5">
               {[
                 { icon: Phone, text: "081-234-5678", href: "tel:0812345678" },
-                { icon: Mail, text: "info@atelier.com", href: "mailto:info@atelier.com" },
+                {
+                  icon: Mail,
+                  text: "info@atelier.com",
+                  href: "mailto:info@atelier.com",
+                },
                 { icon: MapPin, text: "กรุงเทพมหานคร", href: "#" },
               ].map((item, i) => (
                 <a
@@ -54,7 +84,10 @@ export default function FooterCustomer() {
                   className="flex items-center gap-4 sm:gap-5 text-gray-600 text-sm sm:text-base hover:text-gray-900 font-light group"
                 >
                   <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center border border-gray-100">
-                    <item.icon className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={1.5} />
+                    <item.icon
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      strokeWidth={1.5}
+                    />
                   </div>
                   <span>{item.text}</span>
                 </a>
@@ -64,7 +97,9 @@ export default function FooterCustomer() {
 
           {/* ติดตาม */}
           <div>
-            <h4 className="text-gray-900 mb-5 sm:mb-8 font-light tracking-wider text-base sm:text-lg">ติดตามเรา</h4>
+            <h4 className="text-gray-900 mb-5 sm:mb-8 font-light tracking-wider text-base sm:text-lg">
+              ติดตามเรา
+            </h4>
             <div className="flex gap-3 sm:gap-4 mb-8 sm:mb-12">
               {[Instagram, Facebook].map((Icon, i) => (
                 <a
@@ -78,14 +113,16 @@ export default function FooterCustomer() {
             </div>
 
             <div>
-              <p className="text-gray-500 text-xs sm:text-sm font-light mb-3 sm:mb-5 tracking-wide">รับข่าวสารและโปรโมชั่น</p>
+              <p className="text-gray-500 text-xs sm:text-sm font-light mb-3 sm:mb-5 tracking-wide">
+                รับข่าวสารและโปรโมชั่น
+              </p>
               <div className="flex gap-2 sm:gap-3">
                 <input
-                type="email"
-                autoComplete="off"
-                placeholder="Enter your email"
-                suppressHydrationWarning
-                className="flex-1 px-4 py-3 sm:px-5 sm:py-4 rounded-full bg-white border border-gray-200"
+                  type="email"
+                  autoComplete="off"
+                  placeholder="Enter your email"
+                  suppressHydrationWarning
+                  className="flex-1 px-4 py-3 sm:px-5 sm:py-4 rounded-full bg-white border border-gray-200"
                 />
 
                 <button className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gray-900 text-white flex items-center justify-center">
@@ -96,7 +133,11 @@ export default function FooterCustomer() {
                     stroke="currentColor"
                     strokeWidth={1.5}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+                    />
                   </svg>
                 </button>
               </div>

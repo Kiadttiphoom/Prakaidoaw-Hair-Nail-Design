@@ -1,15 +1,23 @@
-import React from 'react';
-import Link from 'next/link';
-import { LayoutDashboard, Calendar, Scissors, Users, Clock, UserCircle, LogOut } from 'lucide-react';
+import React from "react";
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  Calendar,
+  Scissors,
+  Users,
+  Clock,
+  UserCircle,
+  LogOut,
+} from "lucide-react";
 
 export default function SidebarAdmin() {
   const menuItems = [
-    { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/bookings', label: 'จัดการรายการจอง', icon: Calendar },
-    { href: '/admin/services', label: 'จัดการบริการ', icon: Scissors },
-    { href: '/admin/staff', label: 'จัดการพนักงาน', icon: Users },
-    { href: '/admin/schedule', label: 'ตั้งเวลาทำการ', icon: Clock },
-    { href: '/admin/customers', label: 'ลูกค้าในระบบ', icon: UserCircle },
+    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/bookings", label: "จัดการรายการจอง", icon: Calendar },
+    { href: "/admin/services", label: "จัดการบริการ", icon: Scissors },
+    { href: "/admin/staff", label: "จัดการพนักงาน", icon: Users },
+    { href: "/admin/schedule", label: "ตั้งเวลาทำการ", icon: Clock },
+    { href: "/admin/customers", label: "ลูกค้าในระบบ", icon: UserCircle },
   ];
 
   return (

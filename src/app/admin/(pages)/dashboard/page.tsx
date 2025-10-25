@@ -1,66 +1,130 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Calendar, Users, Scissors, Clock, UserCheck, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import React from "react";
+import {
+  Calendar,
+  Users,
+  Scissors,
+  Clock,
+  UserCheck,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 
 export default function DashboardPage() {
   const stats = [
-    { 
-      label: 'รอยืนยัน', 
-      count: 5, 
-      colorClass: 'text-pink-600', 
-      bgClass: 'bg-pink-50',
-      iconBg: 'bg-white',
-      borderClass: 'border-pink-100',
+    {
+      label: "รอยืนยัน",
+      count: 5,
+      colorClass: "text-pink-600",
+      bgClass: "bg-pink-50",
+      iconBg: "bg-white",
+      borderClass: "border-pink-100",
       icon: AlertCircle,
-      trend: '+2 จากเมื่อวาน'
+      trend: "+2 จากเมื่อวาน",
     },
-    { 
-      label: 'ยืนยันแล้ว', 
-      count: 120, 
-      colorClass: 'text-purple-600', 
-      bgClass: 'bg-purple-50',
-      iconBg: 'bg-white',
-      borderClass: 'border-purple-100',
+    {
+      label: "ยืนยันแล้ว",
+      count: 120,
+      colorClass: "text-purple-600",
+      bgClass: "bg-purple-50",
+      iconBg: "bg-white",
+      borderClass: "border-purple-100",
       icon: CheckCircle,
-      trend: '+8 เดือนนี้'
+      trend: "+8 เดือนนี้",
     },
-    { 
-      label: 'เสร็จสิ้น', 
-      count: 8, 
-      colorClass: 'text-cyan-600', 
-      bgClass: 'bg-cyan-50',
-      iconBg: 'bg-white',
-      borderClass: 'border-cyan-100',
+    {
+      label: "เสร็จสิ้น",
+      count: 8,
+      colorClass: "text-cyan-600",
+      bgClass: "bg-cyan-50",
+      iconBg: "bg-white",
+      borderClass: "border-cyan-100",
       icon: Scissors,
-      trend: 'ยอดนิยม 3 รายการ'
+      trend: "ยอดนิยม 3 รายการ",
     },
-    { 
-      label: 'ยกเลิก', 
-      count: 4, 
-      colorClass: 'text-amber-600', 
-      bgClass: 'bg-amber-50',
-      iconBg: 'bg-white',
-      borderClass: 'border-amber-100',
+    {
+      label: "ยกเลิก",
+      count: 4,
+      colorClass: "text-amber-600",
+      bgClass: "bg-amber-50",
+      iconBg: "bg-white",
+      borderClass: "border-amber-100",
       icon: XCircle,
-      trend: 'ทำงานวันนี้ 4 คน'
+      trend: "ทำงานวันนี้ 4 คน",
     },
   ];
 
   const quickActions = [
-    { label: 'จัดการรายการจอง', href: '/admin/bookings', icon: Calendar, color: 'bg-rose-500 hover:bg-rose-600' },
-    { label: 'จัดการบริการ', href: '/admin/services', icon: Scissors, color: 'bg-purple-500 hover:bg-purple-600' },
-    { label: 'จัดการพนักงาน', href: '/admin/staff', icon: Users, color: 'bg-blue-500 hover:bg-blue-600' },
-    { label: 'ตั้งเวลาทำการ', href: '/admin/schedule', icon: Clock, color: 'bg-amber-500 hover:bg-amber-600' },
-    { label: 'ลูกค้าในระบบ', href: '/admin/customers', icon: UserCheck, color: 'bg-pink-500 hover:bg-pink-600' },
+    {
+      label: "จัดการรายการจอง",
+      href: "/admin/bookings",
+      icon: Calendar,
+      color: "bg-rose-500 hover:bg-rose-600",
+    },
+    {
+      label: "จัดการบริการ",
+      href: "/admin/services",
+      icon: Scissors,
+      color: "bg-purple-500 hover:bg-purple-600",
+    },
+    {
+      label: "จัดการพนักงาน",
+      href: "/admin/staff",
+      icon: Users,
+      color: "bg-blue-500 hover:bg-blue-600",
+    },
+    {
+      label: "ตั้งเวลาทำการ",
+      href: "/admin/schedule",
+      icon: Clock,
+      color: "bg-amber-500 hover:bg-amber-600",
+    },
+    {
+      label: "ลูกค้าในระบบ",
+      href: "/admin/customers",
+      icon: UserCheck,
+      color: "bg-pink-500 hover:bg-pink-600",
+    },
   ];
 
   const recentBookings = [
-    { time: '09:00', customer: 'คุณสมหญิง', service: 'ตัดผม + สระ', stylist: 'พี่มิ้น', status: 'confirmed' },
-    { time: '10:30', customer: 'คุณนภา', service: 'ดัดผม', stylist: 'พี่เจน', status: 'pending' },
-    { time: '13:00', customer: 'คุณอารยา', service: 'ย้อมสี', stylist: 'พี่มิ้น', status: 'confirmed' },
-    { time: '14:30', customer: 'คุณวิภา', service: 'ทรีทเมนท์', stylist: 'พี่นุ่น', status: 'confirmed' },
-    { time: '16:00', customer: 'คุณสุดา', service: 'ตัดผม', stylist: 'พี่เบล', status: 'pending' },
+    {
+      time: "09:00",
+      customer: "คุณสมหญิง",
+      service: "ตัดผม + สระ",
+      stylist: "พี่มิ้น",
+      status: "confirmed",
+    },
+    {
+      time: "10:30",
+      customer: "คุณนภา",
+      service: "ดัดผม",
+      stylist: "พี่เจน",
+      status: "pending",
+    },
+    {
+      time: "13:00",
+      customer: "คุณอารยา",
+      service: "ย้อมสี",
+      stylist: "พี่มิ้น",
+      status: "confirmed",
+    },
+    {
+      time: "14:30",
+      customer: "คุณวิภา",
+      service: "ทรีทเมนท์",
+      stylist: "พี่นุ่น",
+      status: "confirmed",
+    },
+    {
+      time: "16:00",
+      customer: "คุณสุดา",
+      service: "ตัดผม",
+      stylist: "พี่เบล",
+      status: "pending",
+    },
   ];
 
   return (
@@ -73,7 +137,9 @@ export default function DashboardPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
-            <p className="text-slate-500 text-sm">ยินดีต้อนรับเข้าสู่ระบบจัดการร้านทำผม</p>
+            <p className="text-slate-500 text-sm">
+              ยินดีต้อนรับเข้าสู่ระบบจัดการร้านทำผม
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-600 mt-4">
@@ -92,21 +158,37 @@ export default function DashboardPage() {
               className={`${stat.bgClass} ${stat.borderClass} border rounded-3xl p-6 hover:shadow-lg transition-all duration-300`}
             >
               <div className="flex items-start justify-between mb-4">
-                <div className={`${stat.iconBg} ${stat.colorClass} w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm`}>
+                <div
+                  className={`${stat.iconBg} ${stat.colorClass} w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm`}
+                >
                   <Icon className="w-7 h-7" />
                 </div>
                 <div className="text-green-500">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                    />
                   </svg>
                 </div>
               </div>
               <div className="space-y-1">
                 <div className="flex items-baseline gap-2">
-                  <span className={`text-5xl font-bold ${stat.colorClass}`}>{stat.count}</span>
+                  <span className={`text-5xl font-bold ${stat.colorClass}`}>
+                    {stat.count}
+                  </span>
                   <span className="text-gray-500 text-sm">รายการ</span>
                 </div>
-                <p className={`${stat.colorClass} font-semibold text-base`}>{stat.label}</p>
+                <p className={`${stat.colorClass} font-semibold text-base`}>
+                  {stat.label}
+                </p>
                 <p className="text-gray-500 text-sm">{stat.trend}</p>
               </div>
             </div>
@@ -141,7 +223,10 @@ export default function DashboardPage() {
             <Calendar className="w-5 h-5 text-rose-400" />
             การจองวันนี้
           </h2>
-          <a href="/admin/bookings" className="text-sm text-rose-500 hover:text-rose-600 font-medium">
+          <a
+            href="/admin/bookings"
+            className="text-sm text-rose-500 hover:text-rose-600 font-medium"
+          >
             ดูทั้งหมด →
           </a>
         </div>
@@ -154,15 +239,21 @@ export default function DashboardPage() {
             >
               <div className="flex items-center gap-4">
                 <div className="bg-white border-2 border-rose-200 rounded-lg px-3 py-2 text-center min-w-[70px]">
-                  <div className="text-lg font-bold text-slate-800">{booking.time}</div>
+                  <div className="text-lg font-bold text-slate-800">
+                    {booking.time}
+                  </div>
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-800">{booking.customer}</p>
-                  <p className="text-sm text-slate-500">{booking.service} • {booking.stylist}</p>
+                  <p className="font-semibold text-slate-800">
+                    {booking.customer}
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    {booking.service} • {booking.stylist}
+                  </p>
                 </div>
               </div>
               <div>
-                {booking.status === 'confirmed' ? (
+                {booking.status === "confirmed" ? (
                   <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                     ยืนยันแล้ว
                   </span>

@@ -1,34 +1,34 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Scissors, Mail, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { Scissors, Mail, Lock, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       if (res.ok) {
-        window.location.href = '/admin/dashboard';
+        window.location.href = "/admin/dashboard";
       } else {
-        setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+        setError("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
       }
     } catch (err) {
-      setError('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+      setError("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +51,9 @@ export default function AdminLoginPage() {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-rose-400 to-pink-500 rounded-2xl shadow-lg mb-4">
               <Scissors className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">ยินดีต้อนรับ</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              ยินดีต้อนรับ
+            </h1>
             <p className="text-gray-500">เข้าสู่ระบบจัดการร้านทำผม</p>
           </div>
 
@@ -67,7 +69,10 @@ export default function AdminLoginPage() {
           <div className="space-y-5" onSubmit={handleSubmit}>
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 อีเมล
               </label>
               <div className="relative">
@@ -79,7 +84,7 @@ export default function AdminLoginPage() {
                   type="email"
                   placeholder="admin@salon.com"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 border text-gray-400 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all"
                   required
                   disabled={isLoading}
@@ -89,7 +94,10 @@ export default function AdminLoginPage() {
 
             {/* Password Input */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 รหัสผ่าน
               </label>
               <div className="relative">
@@ -98,10 +106,10 @@ export default function AdminLoginPage() {
                 </div>
                 <input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-12 pr-12 py-3 border text-gray-400 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all"
                   required
                   disabled={isLoading}
@@ -130,7 +138,10 @@ export default function AdminLoginPage() {
                 />
                 <span className="text-gray-600">จดจำฉันไว้</span>
               </label>
-              <a href="#" className="text-rose-500 hover:text-rose-600 font-medium">
+              <a
+                href="#"
+                className="text-rose-500 hover:text-rose-600 font-medium"
+              >
                 ลืมรหัสผ่าน?
               </a>
             </div>
@@ -144,14 +155,30 @@ export default function AdminLoginPage() {
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   กำลังเข้าสู่ระบบ...
                 </span>
               ) : (
-                'เข้าสู่ระบบ'
+                "เข้าสู่ระบบ"
               )}
             </button>
           </div>
@@ -159,8 +186,11 @@ export default function AdminLoginPage() {
           {/* Footer */}
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-500">
-              ต้องการความช่วยเหลือ?{' '}
-              <a href="#" className="text-rose-500 hover:text-rose-600 font-medium">
+              ต้องการความช่วยเหลือ?{" "}
+              <a
+                href="#"
+                className="text-rose-500 hover:text-rose-600 font-medium"
+              >
                 ติดต่อฝ่ายสนับสนุน
               </a>
             </p>
