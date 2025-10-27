@@ -18,7 +18,7 @@ export default function HeaderCustomer() {
         <div className="flex items-center gap-3">
           <Scissors className="w-6 h-6 text-gray-800" strokeWidth={1} />
           <span className="text-xl tracking-widest text-gray-800 font-light">
-            ATELIER
+            Prakaidoaw Hair&Nail Design
           </span>
         </div>
 

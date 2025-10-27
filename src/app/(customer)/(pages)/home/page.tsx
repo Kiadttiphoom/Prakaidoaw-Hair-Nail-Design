@@ -316,19 +316,6 @@ export default function HomePage() {
             />
           ))}
         </div>
-
-        {/* Scroll Indicator */}
-        <div
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 animate-[bounce_3s_infinite] hidden md:block"
-          style={{ bottom: "100px" }}
-        >
-          <div className="flex flex-col items-center gap-3">
-            <span className="text-xs text-gray-400 tracking-[0.3em] font-light uppercase">
-              Scroll
-            </span>
-            <div className="w-px h-16 bg-gradient-to-b from-gray-400 via-gray-300 to-transparent"></div>
-          </div>
-        </div>
       </div>
 
       {/* Services */}

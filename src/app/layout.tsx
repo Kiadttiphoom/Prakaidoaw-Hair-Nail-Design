@@ -8,8 +8,8 @@ const notoThai = Noto_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  title: "Hair Salons",
-  description: "hair-salons-system",
+  title: "Prakaidoaw Hair&Nail Design",
+  description: "Prakaidoaw Hair&Nail Design",
 };
 
 export default function RootLayout({
