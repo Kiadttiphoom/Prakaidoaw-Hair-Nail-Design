@@ -20,6 +20,9 @@ export default function HomePage() {
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const [services, setServices] = useState<any[]>([]);
+  const [stylists, setStylists] = useState<any[]>([]);
+
   const heroSlides = [
     {
       image:
@@ -41,51 +44,6 @@ export default function HomePage() {
       title: "Premium",
       subtitle: "Quality",
       description: "ผลิตภัณฑ์คุณภาพสูงจากทั่วโลก",
-    },
-  ];
-
-  const services = [
-    {
-      title: "Haircut",
-      description: "ตัดผมและออกแบบทรงผมที่เข้ากับบุคลิกของคุณ",
-      price: "฿450 - ฿1,200",
-      image:
-        "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80",
-    },
-    {
-      title: "Coloring",
-      description: "ย้อมสี ไฮไลท์ บาลายาจ ด้วยสีระดับพรีเมียม",
-      price: "฿1,800 - ฿4,500",
-      image:
-        "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80",
-    },
-    {
-      title: "Treatment",
-      description: "บำรุงผมเข้มข้น ฟื้นฟูเส้นผมให้แข็งแรง",
-      price: "฿800 - ฿2,000",
-      image:
-        "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=800&q=80",
-    },
-    {
-      title: "Hair Spa",
-      description: "ผ่อนคลายพร้อมบำรุงผมอย่างล้ำลึก",
-      price: "฿1,200 - ฿2,800",
-      image:
-        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
-    },
-    {
-      title: "Styling",
-      description: "จัดแต่งทรงผมสำหรับงานพิเศษและโอกาสสำคัญ",
-      price: "฿600 - ฿1,500",
-      image:
-        "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&q=80",
-    },
-    {
-      title: "Perm",
-      description: "ดัดผม เพิ่มวอลุ่ม สร้างลูกเวฟสวยธรรมชาติ",
-      price: "฿2,200 - ฿5,000",
-      image:
-        "https://images.unsplash.com/photo-1595475884562-073c30d45670?w=800&q=80",
     },
   ];
 
@@ -116,33 +74,6 @@ export default function HomePage() {
     },
   ];
 
-  const stylists = [
-    {
-      name: "พี่มิ้นท์",
-      specialty: "Color Specialist",
-      experience: "12 ปี",
-      description: "เชี่ยวชาญด้านการย้อมสีและไฮไลท์",
-      image:
-        "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80",
-    },
-    {
-      name: "พี่เบสท์",
-      specialty: "Cut & Style Expert",
-      experience: "10 ปี",
-      description: "ผู้เชี่ยวชาญด้านการตัดและจัดแต่งทรงผม",
-      image:
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80",
-    },
-    {
-      name: "พี่ปอนด์",
-      specialty: "Treatment Pro",
-      experience: "8 ปี",
-      description: "ผู้เชี่ยวชาญด้านการบำรุงและฟื้นฟูผม",
-      image:
-        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80",
-    },
-  ];
-
   const gallery = [
     "https://images.unsplash.com/photo-1522337094846-8a818192de1f?w=600&q=80",
     "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&q=80",
@@ -153,46 +84,57 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
+  // โหลดข้อมูล
+  const loadData = async () => {
+    try {
+      const res = await fetch("/api/home");
+      const data = await res.json();
+      setServices(data.data.services);
+      setStylists(data.data.stylists);
+    } catch (err) {
+      console.error("Error loading data:", err);
+    }
+  };
+  loadData();
+}, []);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }));
-          }
-        });
-      },
-      { threshold: 0.15 },
-    );
+useEffect(() => {
+  if (services.length === 0 && stylists.length === 0) return;
 
-    // ✅ เพิ่ม id "anim-stylist-0" ถึง "anim-stylist-2" ให้ observer เห็นตั้งแต่แรก
-    document.querySelectorAll('[id^="anim-"]').forEach((el) => {
-      observer.observe(el);
-    });
+  // เริ่ม observer หลังมีข้อมูลแล้ว
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }));
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
 
-    // ✅ บังคับเปิด section stylists ทันทีเมื่อโหลด
-    setIsVisible((prev) => ({
-      ...prev,
-      "anim-stylists-header": true,
-      "anim-stylist-0": true,
-      "anim-stylist-1": true,
-      "anim-stylist-2": true,
-    }));
+  document.querySelectorAll('[id^="anim-"]').forEach((el) => {
+    observer.observe(el);
+  });
 
-    return () => observer.disconnect();
-  }, []);
+  // เปิด stylists ทันทีเมื่อโหลด
+  setIsVisible((prev) => ({
+    ...prev,
+    "anim-stylists-header": true,
+    "anim-stylist-0": true,
+    "anim-stylist-1": true,
+    "anim-stylist-2": true,
+  }));
+
+  return () => observer.disconnect();
+}, [services, stylists]);
+
 
   const nextSlide = () =>
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
   const prevSlide = () =>
     setCurrentSlide(
-      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length,
+      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length
     );
 
   const handleToggle = (index: number) => {
@@ -206,11 +148,10 @@ export default function HomePage() {
         {heroSlides.map((slide, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-all duration-[2500ms] ease-out ${
-              index === currentSlide
+            className={`absolute inset-0 transition-all duration-[2500ms] ease-out ${index === currentSlide
                 ? "opacity-100 scale-100"
                 : "opacity-0 scale-105"
-            }`}
+              }`}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-white/50 to-white z-10"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent z-10"></div>
@@ -308,11 +249,10 @@ export default function HomePage() {
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`h-2 rounded-full transition-all duration-700 ${
-                index === currentSlide
+              className={`h-2 rounded-full transition-all duration-700 ${index === currentSlide
                   ? "w-12 bg-gray-900"
                   : "w-2 bg-gray-400 hover:bg-gray-600"
-              }`}
+                }`}
             />
           ))}
         </div>
@@ -330,11 +270,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto sm:px-8 px-4 relative z-10">
           <div
             id="anim-services"
-            className={`text-center sm:mb-28 mb-14 transition-all duration-1200 ${
-              isVisible["anim-services"]
+            className={`text-center sm:mb-28 mb-14 transition-all duration-1200 ${isVisible["anim-services"]
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-16"
-            }`}
+              }`}
           >
             <div className="inline-block sm:mb-10 mb-5">
               <Scissors
@@ -360,11 +299,10 @@ export default function HomePage() {
               <div
                 key={index}
                 id={`anim-service-${index}`}
-                className={`group relative bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-1000 border border-gray-100/70 hover:border-gray-200 md:hover:-translate-y-4 ${
-                  isVisible[`anim-service-${index}`]
+                className={`group relative bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-1000 border border-gray-100/70 hover:border-gray-200 md:hover:-translate-y-4 ${isVisible[`anim-service-${index}`]
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-16"
-                }`}
+                  }`}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-900/0 via-gray-900/0 to-gray-900/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none z-10"></div>
@@ -372,7 +310,7 @@ export default function HomePage() {
                 {/* ปรับขนาดภาพให้พอดีในมือถือ */}
                 <div className="relative h-44 sm:h-56 md:h-96 overflow-hidden">
                   <img
-                    src={service.image}
+                    src={service.image_url}
                     alt={service.title}
                     className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-[2000ms] ease-out"
                   />
@@ -395,7 +333,7 @@ export default function HomePage() {
 
                   <div className="flex items-center justify-between">
                     <p className="text-sm sm:text-xl md:text-2xl text-gray-900 font-light tracking-wide">
-                      {service.price}
+                      เริ่มต้น {service.price_min} ฿
                     </p>
                     <button className="text-gray-400 group-hover:text-gray-900 group-hover:translate-x-2 md:group-hover:translate-x-3 transition-all duration-700">
                       <svg
@@ -430,11 +368,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto sm:px-8 px-4 relative z-10">
           <div
             id="anim-testimonials"
-            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${
-              isVisible["anim-testimonials"]
+            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible["anim-testimonials"]
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-16"
-            }`}
+              }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.4em] sm:tracking-[0.5em] mb-6 sm:mb-10 font-light uppercase">
               Testimonials
@@ -460,11 +397,10 @@ export default function HomePage() {
             hover:shadow-2xl transition-all duration-1000 border border-gray-100/80
             hover:border-gray-200 md:hover:-translate-y-3 text-center
             shrink-0 w-[85%] sm:w-auto snap-center
-            ${
-                isVisible["anim-testimonials"]
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-95"
-              }`}
+            ${isVisible["anim-testimonials"]
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-95"
+                  }`}
                 style={{ transitionDelay: `${index * 180}ms` }}
               >
                 <div className="flex flex-col items-center mb-8">
@@ -509,11 +445,10 @@ export default function HomePage() {
           {/* Header */}
           <div
             id="anim-stylists-header"
-            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${
-              isVisible["anim-stylists-header"]
+            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible["anim-stylists-header"]
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-16"
-            }`}
+              }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">
               Meet Our Team
@@ -537,36 +472,32 @@ export default function HomePage() {
                   <div
                     key={index}
                     onClick={() => handleToggle(index)}
-                    className={`group text-center flex-shrink-0 w-[250px] sm:w-[300px] snap-center transition-all duration-700 ${
-                      isVisible[`anim-stylist-${index}`]
+                    className={`group text-center flex-shrink-0 w-[250px] sm:w-[300px] snap-center transition-all duration-700 ${isVisible[`anim-stylist-${index}`]
                         ? "opacity-100 translate-x-0"
                         : "opacity-0 -translate-x-12"
-                    }`}
+                      }`}
                   >
                     <div className="relative mb-8 overflow-hidden rounded-[2rem] shadow-lg">
                       <img
-                        src={stylist.image}
+                        src={stylist.image_url}
                         alt={stylist.name}
-                        className={`w-full h-[400px] object-cover transition-all duration-[1500ms] ease-out ${
-                          isActive
+                        className={`w-full h-[400px] object-cover transition-all duration-[1500ms] ease-out ${isActive
                             ? "scale-105 grayscale-0"
                             : "grayscale group-hover:grayscale-0 group-hover:scale-105"
-                        }`}
+                          }`}
                       />
                       <div
-                        className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-700 ${
-                          isActive
+                        className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-700 ${isActive
                             ? "opacity-100"
                             : "opacity-0 group-hover:opacity-100"
-                        }`}
+                          }`}
                       ></div>
 
                       <div
-                        className={`absolute bottom-0 left-0 right-0 p-6 transition-transform duration-700 ${
-                          isActive
+                        className={`absolute bottom-0 left-0 right-0 p-6 transition-transform duration-700 ${isActive
                             ? "translate-y-0"
                             : "translate-y-full group-hover:translate-y-0"
-                        }`}
+                          }`}
                       >
                         <div className="bg-white/98 backdrop-blur-xl rounded-[1.5rem] p-6 border border-gray-100/80 shadow-2xl">
                           <h3 className="text-2xl text-gray-900 mb-2 font-extralight tracking-wide">
@@ -576,7 +507,7 @@ export default function HomePage() {
                             {stylist.specialty}
                           </p>
                           <p className="text-gray-500 text-xs font-light mb-2">
-                            ประสบการณ์ {stylist.experience}
+                            ประสบการณ์ {stylist.experience_years}
                           </p>
                           <p className="text-gray-500 text-sm font-light leading-relaxed">
                             {stylist.description}
@@ -586,9 +517,8 @@ export default function HomePage() {
                     </div>
 
                     <div
-                      className={`transition-opacity duration-700 ${
-                        isActive ? "opacity-0" : "group-hover:opacity-0"
-                      }`}
+                      className={`transition-opacity duration-700 ${isActive ? "opacity-0" : "group-hover:opacity-0"
+                        }`}
                     >
                       <h3 className="text-2xl text-gray-900 mb-2 font-extralight tracking-wide">
                         {stylist.name}
@@ -611,16 +541,15 @@ export default function HomePage() {
             {stylists.map((stylist: any, index: number) => (
               <div
                 key={index}
-                className={`group text-center transition-all duration-1000 ${
-                  isVisible[`anim-stylist-${index}`]
+                className={`group text-center transition-all duration-1000 ${isVisible[`anim-stylist-${index}`]
                     ? "opacity-100 translate-x-0"
                     : "opacity-0 -translate-x-12"
-                }`}
+                  }`}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
                 <div className="relative mb-10 overflow-hidden rounded-[2rem] shadow-lg">
                   <img
-                    src={stylist.image}
+                    src={stylist.image_url}
                     alt={stylist.name}
                     className="w-full h-[600px] object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[1500ms] ease-out"
                   />
@@ -635,7 +564,7 @@ export default function HomePage() {
                         {stylist.specialty}
                       </p>
                       <p className="text-gray-500 text-sm font-light mb-4">
-                        ประสบการณ์ {stylist.experience}
+                        ประสบการณ์ {stylist.experience_years}
                       </p>
                       <p className="text-gray-500 text-sm font-light leading-relaxed">
                         {stylist.description}
@@ -667,11 +596,10 @@ export default function HomePage() {
           {/* Header */}
           <div
             id="anim-gallery-header"
-            className={`text-center mb-24 transition-all duration-1200 ${
-              isVisible["anim-gallery-header"]
+            className={`text-center mb-24 transition-all duration-1200 ${isVisible["anim-gallery-header"]
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-16"
-            }`}
+              }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">
               Portfolio
@@ -692,11 +620,10 @@ export default function HomePage() {
                 key={index}
                 onClick={() => setSelectedImage(image)} // ✅ เปิด popup
                 id={`anim-gallery-${index}`}
-                className={`relative aspect-square overflow-hidden group transition-all duration-1000 rounded-[1.5rem] shadow-lg cursor-pointer ${
-                  isVisible[`anim-gallery-${index}`]
+                className={`relative aspect-square overflow-hidden group transition-all duration-1000 rounded-[1.5rem] shadow-lg cursor-pointer ${isVisible[`anim-gallery-${index}`]
                     ? "opacity-100 scale-100"
                     : "opacity-0 scale-90"
-                }`}
+                  }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <img

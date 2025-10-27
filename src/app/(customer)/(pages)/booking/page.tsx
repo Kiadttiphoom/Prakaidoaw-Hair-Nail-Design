@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
-import { Calendar, Clock, User, Phone, Mail, Scissors, ChevronRight, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Calendar, Clock, User, Phone, Mail, ChevronRight, Check } from "lucide-react";
 
 export default function BookingPage() {
+  const [popupAuth, setPopupAuth] = useState(false);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     service: "",
@@ -19,51 +20,83 @@ export default function BookingPage() {
       id: "haircut",
       title: "Haircut",
       description: "ตัดผมและออกแบบทรงผมที่เข้ากับบุคลิกของคุณ",
-      price: "฿450 - ฿1,200",
+      price: "เริ่มต้น ฿450",
       image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80",
     },
     {
       id: "coloring",
       title: "Coloring",
       description: "ย้อมสี ไฮไลท์ บาลายาจ ด้วยสีระดับพรีเมียม",
-      price: "฿1,800 - ฿4,500",
+      price: "เริ่มต้น  ฿1,800",
       image: "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80",
     },
     {
       id: "treatment",
       title: "Treatment",
       description: "บำรุงผมเข้มข้น ฟื้นฟูเส้นผมให้แข็งแรง",
-      price: "฿800 - ฿2,000",
+      price: "เริ่มต้น ฿800",
       image: "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=800&q=80",
     },
     {
       id: "hair-spa",
       title: "Hair Spa",
       description: "ผ่อนคลายพร้อมบำรุงผมอย่างล้ำลึก",
-      price: "฿1,200 - ฿2,800",
+      price: "เริ่มต้น ฿1,200",
       image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
     },
     {
       id: "styling",
       title: "Styling",
       description: "จัดแต่งทรงผมสำหรับงานพิเศษและโอกาสสำคัญ",
-      price: "฿600 - ฿1,500",
+      price: "เริ่มต้น ฿600",
       image: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&q=80",
     },
     {
       id: "perm",
       title: "Perm",
       description: "ดัดผม เพิ่มวอลุ่ม สร้างลูกเวฟสวยธรรมชาติ",
-      price: "฿2,200 - ฿5,000",
+      price: "เริ่มต้น ฿2,200",
       image: "https://images.unsplash.com/photo-1595475884562-073c30d45670?w=800&q=80",
     },
   ];
 
   const timeSlots = [
-    "08:00", "09:00", "10:00", "11:00", 
-    "13:00", "14:00", "15:00", "16:00", 
+    "08:00", "09:00", "10:00", "11:00",
+    "13:00", "14:00", "15:00", "16:00",
     "17:00", "18:00", "19:00", "20:00"
   ];
+
+  useEffect(() => {
+    fetch("/api/auth", {
+      method: "POST",
+      credentials: "include",
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (res.status === 200 && data.message === "Success") {
+          // ✅ ผู้ใช้ล็อกอินอยู่แล้ว
+          document.body.style.overflow = "";
+          setPopupAuth(false);
+        }
+        else if (res.status === 401 || data.message === "Unauthorized") {
+          // ✅ ยังไม่ได้ล็อกอิน
+          document.body.style.overflow = "hidden";
+          setPopupAuth(true);
+        }
+      })
+      .catch((err) => console.error("Error:", err));
+  }, []);
+
+
+  const handleLineLogin = () => {
+    const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_LINE_CALLBACK_URL!);
+    const clientId = process.env.NEXT_PUBLIC_LINE_CHANNEL_ID!;
+    const state = "randomstring";
+    const scope = "profile openid email";
+    window.location.href = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
+  };
+
+
 
   const handleSubmit = () => {
     if (step < 3) {
@@ -80,18 +113,47 @@ export default function BookingPage() {
     return false;
   };
 
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
       {/* Header */}
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-5 sm:py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-            </div>
-            <a href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-              กลับหน้าหลัก
-            </a>
+      {popupAuth && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[999] overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-xl px-8 py-8 w-[90%] max-w-sm text-center animate-fade-in-up relative">
+            <h3 className="text-gray-800 text-xl font-medium mb-3">
+              กรุณาเข้าสู่ระบบ
+            </h3>
+            <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+              เพื่อเข้าสู่ระบบการ{" "}
+              <span className="font-medium text-gray-800">จองคิวบริการ</span> ของร้าน{" "}
+              <br />
+              <span className="font-semibold text-gray-900">
+                Prakaidoaw Hair&Nail Design
+              </span>
+              <br />
+              เข้าสู่ระบบด้วยบัญชี LINE ของคุณได้เลยค่ะ
+            </p>
+
+            <button
+              onClick={handleLineLogin}
+              className="w-full bg-gray-900 text-white px-6 py-3 rounded-lg text-sm tracking-wider hover:bg-gray-800 transition-all font-light shadow-md"
+            >
+              เข้าสู่ระบบด้วย LINE
+            </button>
           </div>
         </div>
+      )}
+
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-5 sm:py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+          </div>
+          <a href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+            กลับหน้าหลัก
+          </a>
+        </div>
+      </div>
 
       <div className="max-w-5xl mx-auto px-5 sm:px-8 py-12 sm:py-20">
         {/* Title */}
@@ -118,11 +180,10 @@ export default function BookingPage() {
           ].map((item, index) => (
             <div key={item.num} className="flex items-center">
               <div className="flex flex-col items-center">
-                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                  step >= item.num 
-                    ? "bg-gray-900 border-gray-900 text-white" 
-                    : "bg-white border-gray-200 text-gray-400"
-                }`}>
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${step >= item.num
+                  ? "bg-gray-900 border-gray-900 text-white"
+                  : "bg-white border-gray-200 text-gray-400"
+                  }`}>
                   {step > item.num ? (
                     <Check className="w-5 h-5" strokeWidth={2} />
                   ) : (
@@ -134,9 +195,8 @@ export default function BookingPage() {
                 </span>
               </div>
               {index < 2 && (
-                <div className={`w-16 sm:w-24 h-0.5 mx-2 sm:mx-4 transition-all duration-300 ${
-                  step > item.num ? "bg-gray-900" : "bg-gray-200"
-                }`}></div>
+                <div className={`w-16 sm:w-24 h-0.5 mx-2 sm:mx-4 transition-all duration-300 ${step > item.num ? "bg-gray-900" : "bg-gray-200"
+                  }`}></div>
               )}
             </div>
           ))}
@@ -144,7 +204,7 @@ export default function BookingPage() {
 
         {/* Content */}
         <div className="bg-white rounded-3xl border border-gray-200/60 p-6 sm:p-10 shadow-sm">
-          
+
           {/* Step 1: Select Service */}
           {step === 1 && (
             <div className="space-y-6">
@@ -155,12 +215,11 @@ export default function BookingPage() {
                 {services.map((service) => (
                   <button
                     key={service.id}
-                    onClick={() => setFormData({...formData, service: service.id})}
-                    className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-300 text-left ${
-                      formData.service === service.id
-                        ? "border-gray-900 bg-gray-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
+                    onClick={() => setFormData({ ...formData, service: service.id })}
+                    className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-300 text-left ${formData.service === service.id
+                      ? "border-gray-900 bg-gray-50"
+                      : "border-gray-200 hover:border-gray-300"
+                      }`}
                   >
                     <div className="relative h-32 sm:h-40 overflow-hidden">
                       <img
@@ -200,7 +259,7 @@ export default function BookingPage() {
               <h3 className="text-2xl sm:text-3xl text-gray-900 font-light mb-8">
                 เลือกวันและเวลา
               </h3>
-              
+
               {/* Date Picker */}
               <div>
                 <label className="flex items-center gap-2 text-base sm:text-lg text-gray-700 font-light mb-4">
@@ -210,7 +269,7 @@ export default function BookingPage() {
                 <input
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({...formData, date: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   min={new Date().toISOString().split('T')[0]}
                   className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors text-base"
                 />
@@ -226,12 +285,11 @@ export default function BookingPage() {
                   {timeSlots.map((time) => (
                     <button
                       key={time}
-                      onClick={() => setFormData({...formData, time})}
-                      className={`py-3 px-4 rounded-xl border-2 text-sm sm:text-base font-light transition-all duration-300 ${
-                        formData.time === time
-                          ? "border-gray-900 bg-gray-900 text-white"
-                          : "border-gray-200 text-gray-700 hover:border-gray-300"
-                      }`}
+                      onClick={() => setFormData({ ...formData, time })}
+                      className={`py-3 px-4 rounded-xl border-2 text-sm sm:text-base font-light transition-all duration-300 ${formData.time === time
+                        ? "border-gray-900 bg-gray-900 text-white"
+                        : "border-gray-200 text-gray-700 hover:border-gray-300"
+                        }`}
                     >
                       {time}
                     </button>
@@ -247,7 +305,7 @@ export default function BookingPage() {
               <h3 className="text-2xl sm:text-3xl text-gray-900 font-light mb-8">
                 ข้อมูลการติดต่อ
               </h3>
-              
+
               <div>
                 <label className="flex items-center gap-2 text-base text-gray-700 font-light mb-3">
                   <User className="w-5 h-5" strokeWidth={1.5} />
@@ -256,7 +314,7 @@ export default function BookingPage() {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="กรอกชื่อของคุณ"
                   className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
                 />
@@ -270,7 +328,7 @@ export default function BookingPage() {
                 <input
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="0xx-xxx-xxxx"
                   className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
                 />
@@ -284,7 +342,7 @@ export default function BookingPage() {
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="your@email.com"
                   className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
                 />
@@ -296,7 +354,7 @@ export default function BookingPage() {
                 </label>
                 <textarea
                   value={formData.note}
-                  onChange={(e) => setFormData({...formData, note: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                   rows={4}
                   placeholder="ระบุรายละเอียดเพิ่มเติม..."
                   className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors resize-none"
