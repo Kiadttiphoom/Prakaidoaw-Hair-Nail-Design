@@ -257,14 +257,14 @@ export default function HomePage() {
                 className="w-5 h-5 group-hover:rotate-12 transition-transform duration-700"
                 strokeWidth={1.5}
               />
-              จองคิวตอนนี้
+              <a href="/booking">จองคิวตอนนี้</a>
               <Sparkles
                 className="w-4 h-4 group-hover:scale-125 transition-transform duration-700"
                 strokeWidth={1.5}
               />
             </button>
             <button className="group bg-white/90 backdrop-blur-sm text-gray-900 px-10 sm:px-16 py-4 sm:py-6 rounded-full text-sm tracking-[0.25em] hover:bg-white hover:shadow-xl transition-all duration-700 inline-flex items-center gap-4 font-light border border-gray-200">
-              ดูบริการทั้งหมด
+              <a href="/#services">ดูบริการทั้งหมด</a>
               <svg
                 className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-700"
                 fill="none"

@@ -15,6 +15,12 @@ export function middleware(request: NextRequest) {
     }
 
     // TODO: ตรวจสอบ token validity ถ้าต้องการ
+  } else if (pathname.startsWith('')) {
+    const token = request.cookies.get('line_user'); // หรือชื่อคุกกี้ที่ใช้เก็บ token
+
+    if (!token) {
+      return NextResponse.next();
+    }
   }
 
   // ให้ผ่านสำหรับ path อื่น ๆ
