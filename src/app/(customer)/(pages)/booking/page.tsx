@@ -1,9 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Calendar, Clock, User, Phone, Mail, ChevronRight, Check } from "lucide-react";
+import BookingSkeleton from "@/components/UI/customer/Skeleton/BookingSkeleton";
 
 export default function BookingPage() {
+  const [loading, setLoading] = useState(true);
   const [popupAuth, setPopupAuth] = useState(false);
+  const [services, setServices] = useState<any[]>([]);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     service: "",
@@ -15,94 +18,84 @@ export default function BookingPage() {
     note: ""
   });
 
-  const services = [
-    {
-      id: "haircut",
-      title: "Haircut",
-      description: "ตัดผมและออกแบบทรงผมที่เข้ากับบุคลิกของคุณ",
-      price: "เริ่มต้น ฿450",
-      image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80",
-    },
-    {
-      id: "coloring",
-      title: "Coloring",
-      description: "ย้อมสี ไฮไลท์ บาลายาจ ด้วยสีระดับพรีเมียม",
-      price: "เริ่มต้น  ฿1,800",
-      image: "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80",
-    },
-    {
-      id: "treatment",
-      title: "Treatment",
-      description: "บำรุงผมเข้มข้น ฟื้นฟูเส้นผมให้แข็งแรง",
-      price: "เริ่มต้น ฿800",
-      image: "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=800&q=80",
-    },
-    {
-      id: "hair-spa",
-      title: "Hair Spa",
-      description: "ผ่อนคลายพร้อมบำรุงผมอย่างล้ำลึก",
-      price: "เริ่มต้น ฿1,200",
-      image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
-    },
-    {
-      id: "styling",
-      title: "Styling",
-      description: "จัดแต่งทรงผมสำหรับงานพิเศษและโอกาสสำคัญ",
-      price: "เริ่มต้น ฿600",
-      image: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&q=80",
-    },
-    {
-      id: "perm",
-      title: "Perm",
-      description: "ดัดผม เพิ่มวอลุ่ม สร้างลูกเวฟสวยธรรมชาติ",
-      price: "เริ่มต้น ฿2,200",
-      image: "https://images.unsplash.com/photo-1595475884562-073c30d45670?w=800&q=80",
-    },
-  ];
+  useEffect(() => {
+    setLoading(true);
+
+    Promise.allSettled([
+      fetch("/api/services").then((res) => res.json()),
+      fetch("/api/auth", { method: "POST", credentials: "include" })
+        .then(async (res) => {
+          const data = await res.json();
+          return { status: res.status, data };
+        }),
+    ])
+      .then(([servicesResult, authResult]) => {
+        // ✅ services
+        if (servicesResult.status === "fulfilled") {
+          // เซ็ตข้อมูล service ก่อน
+          setServices(servicesResult.value.data.services);
+        }
+
+        // ✅ auth
+        if (authResult.status === "fulfilled") {
+          const { status, data } = authResult.value;
+
+          if (status === 200 && data.message === "Success") {
+            setPopupAuth(false);
+          } else {
+            setPopupAuth(true);
+          }
+
+        } else {
+          setPopupAuth(true);
+        }
+      })
+      .catch((err) => {
+        setPopupAuth(true);
+      });
+  }, []);
+
+  // ✅ useEffect แยก รอให้ข้อมูล services ถูกเซ็ตจริง แล้วค่อยปิด loading
+  useEffect(() => {
+    if (services.length > 0) {
+      // ให้ดีควร delay 1 frame เพื่อให้ UI render ทัน
+      const timeout = setTimeout(() => setLoading(false), 100);
+      return () => clearTimeout(timeout);
+    }
+  }, [services]);
+
+  useEffect(() => {
+    if (popupAuth) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [popupAuth]);
+
+
+
 
   const timeSlots = [
     "08:00", "09:00", "10:00", "11:00",
     "13:00", "14:00", "15:00", "16:00",
-    "17:00", "18:00", "19:00", "20:00"
+    "17:00", "18:00", "19:00", "20:00",
+    "22:00"
   ];
-
-  useEffect(() => {
-    fetch("/api/auth", {
-      method: "POST",
-      credentials: "include",
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (res.status === 200 && data.message === "Success") {
-          // ✅ ผู้ใช้ล็อกอินอยู่แล้ว
-          document.body.style.overflow = "";
-          setPopupAuth(false);
-        }
-        else if (res.status === 401 || data.message === "Unauthorized") {
-          // ✅ ยังไม่ได้ล็อกอิน
-          document.body.style.overflow = "hidden";
-          setPopupAuth(true);
-        }
-      })
-      .catch((err) => console.error("Error:", err));
-  }, []);
 
 
   const handleLineLogin = () => {
-  const clientId = process.env.NEXT_PUBLIC_LINE_CHANNEL_ID!;
-  const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_LINE_CALLBACK_URL!);
+    const clientId = process.env.NEXT_PUBLIC_LINE_CHANNEL_ID!;
+    const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_LINE_CALLBACK_URL!);
 
-  // 👉 เก็บ path ปัจจุบัน (เช่น /home, /services, /booking)
-  const currentPath = window.location.pathname;
-  const state = encodeURIComponent(currentPath); // ปลอดภัยกับ URL ที่มี /
+    // 👉 เก็บ path ปัจจุบัน (เช่น /home, /services, /booking)
+    const currentPath = window.location.pathname;
+    const state = encodeURIComponent(currentPath); // ปลอดภัยกับ URL ที่มี /
 
-  const scope = "profile openid email";
+    const scope = "profile openid email";
 
-  // 👉 ส่ง state ไปด้วย เพื่อให้ callback รู้ว่าต้องกลับมาหน้าไหน
-  window.location.href = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
-};
-
-
+    // 👉 ส่ง state ไปด้วย เพื่อให้ callback รู้ว่าต้องกลับมาหน้าไหน
+    window.location.href = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
+  };
 
 
   const handleSubmit = () => {
@@ -119,8 +112,6 @@ export default function BookingPage() {
     if (step === 3) return formData.name && formData.phone;
     return false;
   };
-
-
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
@@ -141,28 +132,39 @@ export default function BookingPage() {
               <br />
               เข้าสู่ระบบด้วยบัญชี LINE ของคุณได้เลยค่ะ
             </p>
-
+          <div>
             <button
               onClick={handleLineLogin}
-              className="w-full bg-gray-900 text-white px-6 py-3 rounded-lg text-sm tracking-wider hover:bg-gray-800 transition-all font-light shadow-md"
+              className="w-full bg-gray-900 text-white px-6 py-3 rounded-lg text-sm tracking-wider hover:bg-gray-800 transition-all font-light shadow-md mb-4"
             >
               เข้าสู่ระบบด้วย LINE
             </button>
+            <button
+              onClick={() => window.location.href = "/"}
+              className="w-full bg-red-900 text-white px-6 py-3 rounded-lg text-sm tracking-wider hover:bg-red-800 transition-all font-light shadow-md"
+            >
+              ยกเลิก
+            </button>
+            </div>
           </div>
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-5 sm:py-6 mt-20">
+      {loading ? (
+          <BookingSkeleton />
+      ) : 
+        <>
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-5 sm:py-6 mt-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <a href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-            ย้อนกลับ
-          </a>
+              ย้อนกลับ
+            </a>
           </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-5 sm:px-8 py-12 sm:py-20">
+      <div className="max-w-5xl mx-auto px-5 sm:px-8 py-8 sm:py-5">
         {/* Title */}
         <div className="text-center mb-12 sm:mb-16">
           <div className="inline-block mb-4">
@@ -211,7 +213,6 @@ export default function BookingPage() {
 
         {/* Content */}
         <div className="bg-white rounded-3xl border border-gray-200/60 p-6 sm:p-10 shadow-sm">
-
           {/* Step 1: Select Service */}
           {step === 1 && (
             <div className="space-y-6">
@@ -230,7 +231,7 @@ export default function BookingPage() {
                   >
                     <div className="relative h-32 sm:h-40 overflow-hidden">
                       <img
-                        src={service.image}
+                        src={service.image_url}
                         alt={service.title}
                         className="w-full h-full object-cover"
                       />
@@ -246,7 +247,7 @@ export default function BookingPage() {
                         {service.description}
                       </p>
                       <div className="text-base sm:text-lg text-gray-900 font-light">
-                        {service.price}
+                        เริ่มต้น {service.price_min} บาท
                       </div>
                     </div>
                     {formData.service === service.id && (
@@ -401,6 +402,8 @@ export default function BookingPage() {
           </a>
         </div>
       </div>
+        </>
+      }  
     </div>
   );
 }

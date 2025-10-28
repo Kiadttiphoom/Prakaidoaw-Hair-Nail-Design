@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  ArrowRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GalleryLightbox from "@/components/Gallery/GalleryLightbox";
@@ -84,50 +85,48 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
-  // โหลดข้อมูล
-  const loadData = async () => {
-    try {
-      const res = await fetch("/api/home");
-      const data = await res.json();
-      setServices(data.data.services);
-      setStylists(data.data.stylists);
-    } catch (err) {
-      console.error("Error loading data:", err);
-    }
-  };
-  loadData();
-}, []);
+    Promise.all([
+      fetch("/api/services").then((res) => res.json()),
+      fetch("/api/stylists").then((res) => res.json())
+    ])
+      .then(([servicesData, stylistsData]) => {
+        setServices(servicesData.data.services);
+        setStylists(stylistsData.data.stylists);
+      })
+      .catch((err) => console.error());
+  }, []);
 
-useEffect(() => {
-  if (services.length === 0 && stylists.length === 0) return;
 
-  // เริ่ม observer หลังมีข้อมูลแล้ว
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }));
-        }
-      });
-    },
-    { threshold: 0.15 }
-  );
+  useEffect(() => {
+    if (services.length === 0 && stylists.length === 0) return;
 
-  document.querySelectorAll('[id^="anim-"]').forEach((el) => {
-    observer.observe(el);
-  });
+    // เริ่ม observer หลังมีข้อมูลแล้ว
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }));
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
 
-  // เปิด stylists ทันทีเมื่อโหลด
-  setIsVisible((prev) => ({
-    ...prev,
-    "anim-stylists-header": true,
-    "anim-stylist-0": true,
-    "anim-stylist-1": true,
-    "anim-stylist-2": true,
-  }));
+    document.querySelectorAll('[id^="anim-"]').forEach((el) => {
+      observer.observe(el);
+    });
 
-  return () => observer.disconnect();
-}, [services, stylists]);
+    // เปิด stylists ทันทีเมื่อโหลด
+    setIsVisible((prev) => ({
+      ...prev,
+      "anim-stylists-header": true,
+      "anim-stylist-0": true,
+      "anim-stylist-1": true,
+      "anim-stylist-2": true,
+    }));
+
+    return () => observer.disconnect();
+  }, [services, stylists]);
 
 
   const nextSlide = () =>
@@ -149,8 +148,8 @@ useEffect(() => {
           <div
             key={index}
             className={`absolute inset-0 transition-all duration-[2500ms] ease-out ${index === currentSlide
-                ? "opacity-100 scale-100"
-                : "opacity-0 scale-105"
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-105"
               }`}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-white/50 to-white z-10"></div>
@@ -193,33 +192,30 @@ useEffect(() => {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5 animate-[fadeInUp_1.5s_ease-out_0.9s_both]">
-            <button className="group bg-gray-900 text-white px-10 sm:px-16 py-4 sm:py-6 rounded-full text-sm tracking-[0.25em] hover:bg-gray-800 hover:shadow-2xl hover:shadow-gray-900/30 transition-all duration-700 inline-flex items-center gap-4 font-light">
+            <a
+              href="/booking"
+              className="group bg-gray-900 text-white px-10 sm:px-16 py-4 sm:py-6 rounded-full text-sm tracking-[0.25em] hover:bg-gray-800 hover:shadow-2xl hover:shadow-gray-900/30 transition-all duration-700 inline-flex items-center gap-4 font-light"
+            >
               <Calendar
                 className="w-5 h-5 group-hover:rotate-12 transition-transform duration-700"
                 strokeWidth={1.5}
               />
-              <a href="/booking">จองคิวตอนนี้</a>
+              จองคิวตอนนี้
               <Sparkles
                 className="w-4 h-4 group-hover:scale-125 transition-transform duration-700"
                 strokeWidth={1.5}
               />
-            </button>
-            <button className="group bg-white/90 backdrop-blur-sm text-gray-900 px-10 sm:px-16 py-4 sm:py-6 rounded-full text-sm tracking-[0.25em] hover:bg-white hover:shadow-xl transition-all duration-700 inline-flex items-center gap-4 font-light border border-gray-200">
-              <a href="/#services">ดูบริการทั้งหมด</a>
-              <svg
+            </a>
+            <a
+              href="/#services"
+              className="group bg-white/90 backdrop-blur-sm text-gray-900 px-10 sm:px-16 py-4 sm:py-6 rounded-full text-sm tracking-[0.25em] hover:bg-white hover:shadow-xl transition-all duration-700 inline-flex items-center gap-4 font-light border border-gray-200"
+            >
+              ดูบริการทั้งหมด
+              <ArrowRight
                 className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-700"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
                 strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                />
-              </svg>
-            </button>
+              />
+            </a>
           </div>
         </div>
 
@@ -250,8 +246,8 @@ useEffect(() => {
               key={index}
               onClick={() => setCurrentSlide(index)}
               className={`h-2 rounded-full transition-all duration-700 ${index === currentSlide
-                  ? "w-12 bg-gray-900"
-                  : "w-2 bg-gray-400 hover:bg-gray-600"
+                ? "w-12 bg-gray-900"
+                : "w-2 bg-gray-400 hover:bg-gray-600"
                 }`}
             />
           ))}
@@ -271,8 +267,8 @@ useEffect(() => {
           <div
             id="anim-services"
             className={`text-center sm:mb-28 mb-14 transition-all duration-1200 ${isVisible["anim-services"]
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-16"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-16"
               }`}
           >
             <div className="inline-block sm:mb-10 mb-5">
@@ -300,8 +296,8 @@ useEffect(() => {
                 key={index}
                 id={`anim-service-${index}`}
                 className={`group relative bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-1000 border border-gray-100/70 hover:border-gray-200 md:hover:-translate-y-4 ${isVisible[`anim-service-${index}`]
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-16"
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-16"
                   }`}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
@@ -333,7 +329,7 @@ useEffect(() => {
 
                   <div className="flex items-center justify-between">
                     <p className="text-sm sm:text-xl md:text-2xl text-gray-900 font-light tracking-wide">
-                      เริ่มต้น {service.price_min} ฿
+                      เริ่มต้น {service.price_min} บาท
                     </p>
                     <button className="text-gray-400 group-hover:text-gray-900 group-hover:translate-x-2 md:group-hover:translate-x-3 transition-all duration-700">
                       <svg
@@ -369,8 +365,8 @@ useEffect(() => {
           <div
             id="anim-testimonials"
             className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible["anim-testimonials"]
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-16"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-16"
               }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.4em] sm:tracking-[0.5em] mb-6 sm:mb-10 font-light uppercase">
@@ -446,8 +442,8 @@ useEffect(() => {
           <div
             id="anim-stylists-header"
             className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible["anim-stylists-header"]
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-16"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-16"
               }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">
@@ -473,8 +469,8 @@ useEffect(() => {
                     key={index}
                     onClick={() => handleToggle(index)}
                     className={`group text-center flex-shrink-0 w-[250px] sm:w-[300px] snap-center transition-all duration-700 ${isVisible[`anim-stylist-${index}`]
-                        ? "opacity-100 translate-x-0"
-                        : "opacity-0 -translate-x-12"
+                      ? "opacity-100 translate-x-0"
+                      : "opacity-0 -translate-x-12"
                       }`}
                   >
                     <div className="relative mb-8 overflow-hidden rounded-[2rem] shadow-lg">
@@ -482,21 +478,21 @@ useEffect(() => {
                         src={stylist.image_url}
                         alt={stylist.name}
                         className={`w-full h-[400px] object-cover transition-all duration-[1500ms] ease-out ${isActive
-                            ? "scale-105 grayscale-0"
-                            : "grayscale group-hover:grayscale-0 group-hover:scale-105"
+                          ? "scale-105 grayscale-0"
+                          : "grayscale group-hover:grayscale-0 group-hover:scale-105"
                           }`}
                       />
                       <div
                         className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-700 ${isActive
-                            ? "opacity-100"
-                            : "opacity-0 group-hover:opacity-100"
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-100"
                           }`}
                       ></div>
 
                       <div
                         className={`absolute bottom-0 left-0 right-0 p-6 transition-transform duration-700 ${isActive
-                            ? "translate-y-0"
-                            : "translate-y-full group-hover:translate-y-0"
+                          ? "translate-y-0"
+                          : "translate-y-full group-hover:translate-y-0"
                           }`}
                       >
                         <div className="bg-white/98 backdrop-blur-xl rounded-[1.5rem] p-6 border border-gray-100/80 shadow-2xl">
@@ -542,8 +538,8 @@ useEffect(() => {
               <div
                 key={index}
                 className={`group text-center transition-all duration-1000 ${isVisible[`anim-stylist-${index}`]
-                    ? "opacity-100 translate-x-0"
-                    : "opacity-0 -translate-x-12"
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-12"
                   }`}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
@@ -597,8 +593,8 @@ useEffect(() => {
           <div
             id="anim-gallery-header"
             className={`text-center mb-24 transition-all duration-1200 ${isVisible["anim-gallery-header"]
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-16"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-16"
               }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">
@@ -621,8 +617,8 @@ useEffect(() => {
                 onClick={() => setSelectedImage(image)} // ✅ เปิด popup
                 id={`anim-gallery-${index}`}
                 className={`relative aspect-square overflow-hidden group transition-all duration-1000 rounded-[1.5rem] shadow-lg cursor-pointer ${isVisible[`anim-gallery-${index}`]
-                    ? "opacity-100 scale-100"
-                    : "opacity-0 scale-90"
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-90"
                   }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
