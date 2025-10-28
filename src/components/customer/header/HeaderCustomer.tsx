@@ -4,12 +4,15 @@ import Link from "next/link";
 import { Menu, X, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/context/UserContext";
+import { usePathname } from 'next/navigation'
 
 export default function HeaderCustomer() {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const { user } = useUser();
   const logoutRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const isBookingPage = pathname === "/booking";
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -26,12 +29,19 @@ export default function HeaderCustomer() {
   }, []);
 
   const handleLineLogin = () => {
-    const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_LINE_CALLBACK_URL!);
     const clientId = process.env.NEXT_PUBLIC_LINE_CHANNEL_ID!;
-    const state = "randomstring";
+    const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_LINE_CALLBACK_URL!);
+
+    // 👉 เก็บ path ปัจจุบัน (เช่น /home, /services, /booking)
+    const currentPath = window.location.pathname;
+    const state = encodeURIComponent(currentPath); // ปลอดภัยกับ URL ที่มี /
+
     const scope = "profile openid email";
+
+    // 👉 ส่ง state ไปด้วย เพื่อให้ callback รู้ว่าต้องกลับมาหน้าไหน
     window.location.href = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
   };
+
 
   const handleLogout = async () => {
     try {
@@ -65,7 +75,9 @@ export default function HeaderCustomer() {
 
           {/* เมนู Desktop */}
           <div className="hidden md:flex items-center justify-between gap-10 text-sm tracking-wide">
-            <Link href="#services" className="text-gray-600 hover:text-gray-900 font-light">
+            {!isBookingPage && (
+              <>
+              <Link href="#services" className="text-gray-600 hover:text-gray-900 font-light">
               บริการ
             </Link>
             <Link href="#stylists" className="text-gray-600 hover:text-gray-900 font-light">
@@ -74,12 +86,16 @@ export default function HeaderCustomer() {
             <Link href="#gallery" className="text-gray-600 hover:text-gray-900 font-light">
               ผลงาน
             </Link>
+              </>
+            )}
+            
 
             <div className="flex items-center gap-4 relative" ref={logoutRef}>
+              {!isBookingPage && (
               <button className="bg-gray-900 text-white px-6 py-2 rounded-full text-xs tracking-wider hover:bg-gray-800 transition-all font-light">
                 <a href="/booking">จองคิว</a>
               </button>
-
+              )}
               {user ? (
                 <>
                   <button

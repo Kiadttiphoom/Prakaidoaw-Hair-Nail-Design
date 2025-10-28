@@ -31,8 +31,10 @@ export async function GET(req: Request) {
   });
   const profile = await profileRes.json();
 
+  const state = searchParams.get("state") || "/";
+  const redirectUrl = new URL(state, req.url);
+  const res = NextResponse.redirect(redirectUrl);
   // เก็บ cookie (เพื่อให้ client โหลดมาทีหลัง)
-  const res = NextResponse.redirect(new URL("/booking", req.url));
   res.cookies.set("line_user", JSON.stringify(profile), {
     httpOnly: true,
     secure: true,

@@ -89,12 +89,19 @@ export default function BookingPage() {
 
 
   const handleLineLogin = () => {
-    const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_LINE_CALLBACK_URL!);
-    const clientId = process.env.NEXT_PUBLIC_LINE_CHANNEL_ID!;
-    const state = "randomstring";
-    const scope = "profile openid email";
-    window.location.href = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
-  };
+  const clientId = process.env.NEXT_PUBLIC_LINE_CHANNEL_ID!;
+  const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_LINE_CALLBACK_URL!);
+
+  // 👉 เก็บ path ปัจจุบัน (เช่น /home, /services, /booking)
+  const currentPath = window.location.pathname;
+  const state = encodeURIComponent(currentPath); // ปลอดภัยกับ URL ที่มี /
+
+  const scope = "profile openid email";
+
+  // 👉 ส่ง state ไปด้วย เพื่อให้ callback รู้ว่าต้องกลับมาหน้าไหน
+  window.location.href = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
+};
+
 
 
 
@@ -145,13 +152,13 @@ export default function BookingPage() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-5 sm:py-6">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-5 sm:py-6 mt-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-          </div>
-          <a href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-            กลับหน้าหลัก
+            <a href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+            ย้อนกลับ
           </a>
+          </div>
         </div>
       </div>
 
