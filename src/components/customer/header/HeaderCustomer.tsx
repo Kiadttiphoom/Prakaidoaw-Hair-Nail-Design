@@ -49,7 +49,7 @@ export default function HeaderCustomer() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative">
           {/* โลโก้ */}
           <div className="flex items-center gap-3">
-            <img src="/logo_2.png" alt="Logo Text" className="h-10 w-auto" />
+            <img src="/logo.png" alt="Logo Text" className="h-10 w-auto" />
             <span className="text-xl tracking-widest text-gray-800 font-light">
               Prakaidoaw Hair&Nail Design
             </span>
