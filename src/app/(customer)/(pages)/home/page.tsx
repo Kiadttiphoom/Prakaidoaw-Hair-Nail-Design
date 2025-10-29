@@ -11,7 +11,6 @@ import {
   Sparkles,
   ArrowRight
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import GalleryLightbox from "@/components/Gallery/GalleryLightbox";
 
 export default function HomePage() {

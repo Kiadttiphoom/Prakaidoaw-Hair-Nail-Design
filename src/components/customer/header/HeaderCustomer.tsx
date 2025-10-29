@@ -1,15 +1,17 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, X, LogOut, User, Scissors, UsersRound, FileImage, TicketPercent } from "lucide-react";
+import { Menu, LogOut, User, Scissors, UsersRound, FileImage, TicketPercent } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/context/UserContext";
+import { useSystem } from "@/context/SystemContext";
 import { usePathname } from 'next/navigation'
 
 export default function HeaderCustomer() {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const { user } = useUser();
+  const { system } = useSystem();
   const logoutRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const isBookingPage = pathname === "/booking";
@@ -58,10 +60,16 @@ export default function HeaderCustomer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 sm:py-4 flex items-center justify-between relative">
         {/* โลโก้ */}
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="Logo Text" className="h-10 w-auto" />
-          <span className="text-sm sm:text-xl tracking-widest text-gray-800 font-light">
-            Prakaidoaw Hair&Nail Design
-          </span>
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition cursor-pointer">
+            <img
+              src={system?.logo_url || "/logo.png"}
+              alt="Logo Text"
+              className="h-10 w-auto"
+            />
+            <span className="text-sm sm:text-xl tracking-widest text-gray-800 font-light">
+              {system?.shop_name || "Prakaidoaw Hair & Nail Design"}
+            </span>
+          </Link>
         </div>
 
 
@@ -69,15 +77,45 @@ export default function HeaderCustomer() {
         <div className="hidden md:flex items-center justify-between gap-10 text-sm tracking-wide">
           {!isBookingPage && (
             <>
-              <Link href="#services" className="text-gray-600 hover:text-gray-900 font-light">
+              <a
+                onClick={(e) => {
+                  e.preventDefault(); // ❌ ไม่ให้เปลี่ยน URL
+                  const target = document.querySelector("#services");
+                  if (target) {
+                    const offset = target.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({ top: offset, behavior: "smooth" });
+                  }
+                }}
+                className="text-gray-600 hover:text-gray-900 font-light cursor-pointer"
+              >
                 บริการ
-              </Link>
-              <Link href="#stylists" className="text-gray-600 hover:text-gray-900 font-light">
+              </a>
+              <a
+                onClick={(e) => {
+                  e.preventDefault(); // ❌ ไม่ให้เปลี่ยน URL
+                  const target = document.querySelector("#stylists");
+                  if (target) {
+                    const offset = target.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({ top: offset, behavior: "smooth" });
+                  }
+                }}
+                className="text-gray-600 hover:text-gray-900 font-light cursor-pointer"
+              >
                 ช่างผม
-              </Link>
-              <Link href="#gallery" className="text-gray-600 hover:text-gray-900 font-light">
+              </a>
+              <a
+                onClick={(e) => {
+                  e.preventDefault(); // ❌ ไม่ให้เปลี่ยน URL
+                  const target = document.querySelector("#gallery");
+                  if (target) {
+                    const offset = target.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({ top: offset, behavior: "smooth" });
+                  }
+                }}
+                className="text-gray-600 hover:text-gray-900 font-light cursor-pointer"
+              >
                 ผลงาน
-              </Link>
+              </a>
             </>
           )}
 
@@ -289,35 +327,57 @@ export default function HeaderCustomer() {
 
                           {/* Menu Items */}
                           <div className="py-3 px-2">
-                            <Link
-                              href="#services"
-                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1"
+                            <a
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const target = document.querySelector("#services");
+                                if (target) {
+                                  const offset = target.getBoundingClientRect().top + window.scrollY - 100;
+                                  window.scrollTo({ top: offset, behavior: "smooth" });
+                                }
+                              }}
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                             >
                               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
                                 <Scissors className="h-5 w-5 text-gray-700" />
                               </div>
                               <span className="font-medium text-sm">บริการ</span>
-                            </Link>
+                            </a>
 
-                            <Link
-                              href="#stylists"
-                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1"
+                            <a
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const target = document.querySelector("#stylists");
+                                if (target) {
+                                  const offset = target.getBoundingClientRect().top + window.scrollY - 100;
+                                  window.scrollTo({ top: offset, behavior: "smooth" });
+                                }
+                              }}
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                             >
                               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
                                 <UsersRound className="h-5 w-5 text-gray-700" />
                               </div>
                               <span className="font-medium text-sm">ช่างผม</span>
-                            </Link>
+                            </a>
 
-                            <Link
-                              href="#gallery"
-                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1"
+                            <a
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const target = document.querySelector("#gallery");
+                                if (target) {
+                                  const offset = target.getBoundingClientRect().top + window.scrollY - 100;
+                                  window.scrollTo({ top: offset, behavior: "smooth" });
+                                }
+                              }}
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                             >
                               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
                                 <FileImage className="h-5 w-5 text-gray-700" />
                               </div>
                               <span className="font-medium text-sm">ผลงาน</span>
-                            </Link>
+                            </a>
+
 
                             <div className="my-3 mx-4 border-t border-gray-200/70"></div>
 
