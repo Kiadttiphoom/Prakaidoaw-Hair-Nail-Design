@@ -11,6 +11,7 @@ import {
   Sparkles,
   ArrowRight
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import GalleryLightbox from "@/components/Gallery/GalleryLightbox";
 
 export default function HomePage() {
@@ -23,6 +24,8 @@ export default function HomePage() {
   const [services, setServices] = useState<any[]>([]);
   const [stylists, setStylists] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+
+  const [loading, setLoading] = useState(true);
 
   const heroSlides = [
     {
@@ -58,6 +61,14 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
+  if (window.location.hash) {
+    window.history.replaceState(null, "", window.location.pathname);
+    window.scrollTo(0, 0);
+  }
+}, []);
+
+
+  useEffect(() => {
     Promise.all([
       fetch("/api/services").then((res) => res.json()),
       fetch("/api/stylists").then((res) => res.json()),
@@ -67,8 +78,10 @@ export default function HomePage() {
         setServices(servicesData.data.services);
         setStylists(stylistsData.data.stylists);
         setReviews(reviewsData.data.reviews);
+        setLoading(false);
       })
       .catch((err) => console.error());
+      setLoading(false);
   }, []);
 
 
@@ -114,6 +127,14 @@ export default function HomePage() {
   const handleToggle = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
+
+  if (loading) {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-white">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-gray-900"></div>
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen bg-white">
