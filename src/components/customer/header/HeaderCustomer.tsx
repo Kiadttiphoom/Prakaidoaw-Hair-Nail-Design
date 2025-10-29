@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, LogOut, User, Scissors, UsersRound, FileImage, TicketPercent } from "lucide-react";
+import { Menu, LogOut, User, Scissors, UsersRound, FileImage, TicketPercent,ClipboardClock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/context/UserContext";
 import { useSystem } from "@/context/SystemContext";
@@ -121,15 +121,6 @@ export default function HeaderCustomer() {
 
 
           <div className="flex items-center gap-4 relative" ref={logoutRef}>
-            {!isBookingPage && (
-              <a
-                href="/booking"
-                className="cursor-pointer bg-gray-900 text-white px-6 py-2 rounded-full text-xs tracking-wider hover:bg-gray-800 transition-all font-light w-25 text-center"
-              >
-                จองคิว
-              </a>
-
-            )}
             {user ? (
               <>
                 <img
@@ -177,14 +168,24 @@ export default function HeaderCustomer() {
                             </div>
                           )}
 
-                          <div className="my-3 mx-4 border-t border-gray-200/70"></div>
+                          {!isBookingPage && (
+                            <Link
+                            href="/booking"
+                            className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
+                          >
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                              <TicketPercent className="h-5 w-5 text-gray-700" />
+                            </div>
+                            <span className="font-semibold text-sm">จองคิว</span>
+                          </Link>
+                          )}
 
                           <Link
                             href="/booking"
-                            className="flex items-center w-full gap-4 px-4 py-3.5 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-2xl transition-all duration-300 group mb-1 shadow-md hover:shadow-lg hover:scale-[1.02]"
+                            className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                           >
-                            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                              <TicketPercent className="h-5 w-5 text-white" />
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                              <ClipboardClock className="h-5 w-5 text-gray-700" />
                             </div>
                             <span className="font-semibold text-sm">ประวัติจองคิว</span>
                           </Link>
@@ -192,13 +193,15 @@ export default function HeaderCustomer() {
                         </div>
 
                         {/* Logout Button */}
-                        <div className="border-t border-gray-100 pt-2">
+                        <div className="py-3 px-2">
                           <button
                             onClick={handleLogout}
-                            className="flex items-center w-full gap-3 px-5 py-3 text-red-600 hover:bg-red-50 transition-all duration-200 group"
+                            className="flex items-center w-full gap-4 px-4 py-3.5 text-red-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                           >
-                            <LogOut className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
-                            <span className="font-medium">ออกจากระบบ</span>
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center group-hover:from-red-200 group-hover:to-red-300 transition-all duration-300 shadow-sm">
+                              <LogOut className="h-5 w-5 text-red-700" />
+                            </div>
+                            <span className="font-semibold text-sm">ออกจากระบบ</span>
                           </button>
                         </div>
                       </div>
@@ -226,7 +229,7 @@ export default function HeaderCustomer() {
             />
             {user ? (
               <>
-                {isBookingPage ? (
+                {isBookingPage ? ( 
                   <>
                     <AnimatePresence>
                       {showLogout && (
@@ -269,26 +272,29 @@ export default function HeaderCustomer() {
                               <div className="my-3 mx-4 border-t border-gray-200/70"></div>
 
                               <Link
-                                href="/booking"
-                                className="flex items-center w-full gap-4 px-4 py-3.5 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-2xl transition-all duration-300 group mb-1 shadow-md hover:shadow-lg hover:scale-[1.02]"
-                              >
-                                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                                  <TicketPercent className="h-5 w-5 text-white" />
-                                </div>
-                                <span className="font-semibold text-sm">ประวัติจองคิว</span>
-                              </Link>
+                            href="/booking"
+                            className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
+                          >
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                              <ClipboardClock className="h-5 w-5 text-gray-700" />
+                            </div>
+                            <span className="font-semibold text-sm">ประวัติจองคิว</span>
+                          </Link>
                             </div>
 
                             {/* Logout Button */}
-                            <div className="border-t border-gray-200/70 px-2 pb-2 pt-3">
+                            <div className="py-3 px-2">
+
                               <button
-                                onClick={handleLogout}
-                                className="flex items-center justify-center w-full gap-3 px-4 py-3.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-2xl transition-all duration-300 group shadow-sm hover:shadow-md"
-                              >
-                                <LogOut className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" />
-                                <span className="font-semibold text-sm">ออกจากระบบ</span>
-                              </button>
-                            </div>
+                              onClick={handleLogout}
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-red-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
+                            >
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center group-hover:from-red-200 group-hover:to-red-300 transition-all duration-300 shadow-sm">
+                                <LogOut className="h-5 w-5 text-red-700" />
+                              </div>
+                              <span className="font-semibold text-sm">ออกจากระบบ</span>
+                            </button>
+                          </div>
                           </div>
                         </motion.div>
                       )}
@@ -383,31 +389,33 @@ export default function HeaderCustomer() {
 
                             <Link
                               href="/booking"
-                              className="flex items-center w-full gap-4 px-4 py-3.5 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-2xl transition-all duration-300 group mb-1 shadow-md hover:shadow-lg hover:scale-[1.02]"
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                             >
-                              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                                <TicketPercent className="h-5 w-5 text-white" />
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                                <TicketPercent className="h-5 w-5 text-gray-700" />
                               </div>
                               <span className="font-semibold text-sm">จองคิว</span>
                             </Link>
                             <Link
                               href="/booking"
-                              className="flex items-center w-full gap-4 px-4 py-3.5 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-2xl transition-all duration-300 group mb-1 shadow-md hover:shadow-lg hover:scale-[1.02]"
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                             >
-                              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                                <TicketPercent className="h-5 w-5 text-white" />
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                                <TicketPercent className="h-5 w-5 text-gray-700" />
                               </div>
                               <span className="font-semibold text-sm">ประวัติจองคิว</span>
                             </Link>
                           </div>
 
                           {/* Logout Button */}
-                          <div className="border-t border-gray-200/70 px-2 pb-2 pt-3">
-                            <button
+                          <div className="py-3 px-2">
+                              <button
                               onClick={handleLogout}
-                              className="flex items-center justify-center w-full gap-3 px-4 py-3.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-2xl transition-all duration-300 group shadow-sm hover:shadow-md"
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-red-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                             >
-                              <LogOut className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" />
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center group-hover:from-red-200 group-hover:to-red-300 transition-all duration-300 shadow-sm">
+                                <LogOut className="h-5 w-5 text-red-700" />
+                              </div>
                               <span className="font-semibold text-sm">ออกจากระบบ</span>
                             </button>
                           </div>
