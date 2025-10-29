@@ -79,7 +79,7 @@ export async function GET(req: Request) {
     const redirectUrl = new URL(state, req.url);
     const res = NextResponse.redirect(redirectUrl);
 
-    res.cookies.set("line_user", JSON.stringify(profile), {
+    res.cookies.set("line_user", token, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
