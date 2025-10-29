@@ -67,8 +67,8 @@ export async function GET(req: Request) {
       {
         user_id: profile.userId,
         line_user_id: profile.userId,
-        name: profile.displayName,
-        picture: profile.pictureUrl,
+        displayName: profile.displayName,
+        pictureUrl: profile.pictureUrl,
       },
       JWT_SECRET,
       { expiresIn: "7d" } // อายุ 7 วัน

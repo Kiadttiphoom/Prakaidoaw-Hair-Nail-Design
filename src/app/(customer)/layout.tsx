@@ -22,8 +22,8 @@ export default async function CustomerLayout({
       user = decoded as {
         user_id: number;
         line_user_id: string;
-        name: string;
-        picture: string;
+        displayName: string;
+        pictureUrl: string;
       };
     } catch (err) {
       //console.error("❌ Invalid JWT:", err);
