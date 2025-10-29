@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { mysqlPool } from "@/lib/db";
-import jwt from "jsonwebtoken"; // ✅ เพิ่มตรงนี้
-import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function GET(req: Request) {
   try {
@@ -41,31 +39,31 @@ export async function GET(req: Request) {
     });
     const profile = await profileRes.json();
 
-    // 3️⃣ เช็กว่าผู้ใช้มีใน DB หรือยัง
+    // 3️⃣ เช็กว่า user มีอยู่ใน DB หรือยัง
     const [rows]: any = await mysqlPool.query(
       "SELECT id FROM customers WHERE line_user_id = ?",
       [profile.userId]
     );
 
-    let userId: number;
     if (rows.length === 0) {
-      const [insertResult]: any = await mysqlPool.query(
+      // ➕ ถ้ายังไม่มี ให้ insert
+      await mysqlPool.query(
         "INSERT INTO customers (line_user_id, display_name, picture_url) VALUES (?, ?, ?)",
         [profile.userId, profile.displayName, profile.pictureUrl]
       );
-      userId = insertResult.insertId;
     } else {
-      userId = rows[0].id;
+      // 🔁 ถ้ามีแล้ว อัปเดตชื่อ/รูปให้ใหม่
       await mysqlPool.query(
         "UPDATE customers SET display_name = ?, picture_url = ? WHERE line_user_id = ?",
         [profile.displayName, profile.pictureUrl, profile.userId]
       );
     }
 
-    // 4️⃣ สร้าง JWT token
+    const JWT_SECRET = process.env.JWT_SECRET!;
+
     const token = jwt.sign(
       {
-        user_id: userId,
+        user_id: profile.userId,
         line_user_id: profile.userId,
         name: profile.displayName,
         picture: profile.pictureUrl,
@@ -74,17 +72,17 @@ export async function GET(req: Request) {
       { expiresIn: "7d" } // อายุ 7 วัน
     );
 
-    // 5️⃣ สร้าง cookie JWT
+    // 4️⃣ สร้าง cookie และ redirect กลับหน้า state
     const state = searchParams.get("state") || "/";
     const redirectUrl = new URL(state, req.url);
     const res = NextResponse.redirect(redirectUrl);
 
-    res.cookies.set("line_user", token, {
+    res.cookies.set("line_user", JSON.stringify(profile), {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 วัน
+      maxAge: 60 * 60 * 24,
     });
 
     return res;
