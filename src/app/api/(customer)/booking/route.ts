@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         [stylist_id]
       );
 
-      const formattedRows = rows.map((item) => ({
+      const formattedRows = rows.map((item: any) => ({
         ...item,
         price_min: Number(item.price_min).toLocaleString("th-TH"),
       }));
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
           const end = new Date(start.getTime() + 60 * 60000); // ใช้ duration ของ service
           if (end > workEndDate) break;
 
-          const overlap = bookings.some((b) => {
+          const overlap = bookings.some((b: any) => {
             const bStart = new Date(`${date}T${b.time_start}`);
             const bEnd = new Date(`${date}T${b.time_end}`);
             return start < bEnd && end > bStart;
