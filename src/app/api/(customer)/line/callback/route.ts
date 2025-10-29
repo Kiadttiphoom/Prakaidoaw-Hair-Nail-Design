@@ -8,6 +8,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const code = searchParams.get("code");
 
+    const promisePool = mysqlPool.promise();
+
     if (!code) {
       return NextResponse.json({ error: "Missing code" }, { status: 400 });
     }
@@ -40,20 +42,20 @@ export async function GET(req: Request) {
     const profile = await profileRes.json();
 
     // 3️⃣ เช็กว่า user มีอยู่ใน DB หรือยัง
-    const [rows]: any = await mysqlPool.query(
+    const [rows]: any = await promisePool.query(
       "SELECT id FROM customers WHERE line_user_id = ?",
       [profile.userId]
     );
 
     if (rows.length === 0) {
       // ➕ ถ้ายังไม่มี ให้ insert
-      await mysqlPool.query(
+      await promisePool.query(
         "INSERT INTO customers (line_user_id, display_name, picture_url) VALUES (?, ?, ?)",
         [profile.userId, profile.displayName, profile.pictureUrl]
       );
     } else {
       // 🔁 ถ้ามีแล้ว อัปเดตชื่อ/รูปให้ใหม่
-      await mysqlPool.query(
+      await promisePool.query(
         "UPDATE customers SET display_name = ?, picture_url = ? WHERE line_user_id = ?",
         [profile.displayName, profile.pictureUrl, profile.userId]
       );
