@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Thai } from "next/font/google";
+import { SystemProvider } from "@/context/SystemContext";
 import "./globals.css";
 
 const notoThai = Noto_Sans_Thai({
@@ -28,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="th">
       <body className={`${notoThai.className} antialiased bg-white`}>
+        <SystemProvider>
         {children}
+        </SystemProvider>
       </body>
     </html>
   );

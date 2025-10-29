@@ -64,6 +64,7 @@ export default function HeaderCustomer() {
           </span>
         </div>
 
+
         {/* เมนู Desktop */}
         <div className="hidden md:flex items-center justify-between gap-10 text-sm tracking-wide">
           {!isBookingPage && (
@@ -84,11 +85,11 @@ export default function HeaderCustomer() {
           <div className="flex items-center gap-4 relative" ref={logoutRef}>
             {!isBookingPage && (
               <a
-                  href="/booking"
-                  className="cursor-pointer bg-gray-900 text-white px-6 py-2 rounded-full text-xs tracking-wider hover:bg-gray-800 transition-all font-light w-25 text-center"
-                >
-                  จองคิว
-                </a>
+                href="/booking"
+                className="cursor-pointer bg-gray-900 text-white px-6 py-2 rounded-full text-xs tracking-wider hover:bg-gray-800 transition-all font-light w-25 text-center"
+              >
+                จองคิว
+              </a>
 
             )}
             {user ? (
@@ -112,43 +113,57 @@ export default function HeaderCustomer() {
                       } as any)}
                     >
                       <div className="flex flex-col">
-                            {/* User Profile Section */}
-                            <div className="px-5 py-4 bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
-                              <div className="flex items-center gap-3">
-                                <img
-                                  src={user.pictureUrl}
-                                  alt="User profile"
-                                  className="h-12 w-12 rounded-full object-cover border-2 border-gray-200 shadow-sm ring-2 ring-white"
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-semibold text-gray-800 truncate">
-                                    คุณ {user.displayName}
-                                  </p>
-                                  <p className="text-xs text-gray-500 mt-0.5">ผู้ใช้งานทั่วไป</p>
-                                </div>
-                              </div>
+                        {/* User Profile Section */}
+                        <div className="px-5 py-4 bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={user.pictureUrl}
+                              alt="User profile"
+                              className="h-12 w-12 rounded-full object-cover border-2 border-gray-200 shadow-sm ring-2 ring-white"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-gray-800 truncate">
+                                คุณ {user.displayName}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-0.5">ผู้ใช้งานทั่วไป</p>
                             </div>
-
-                            {isBookingPage && (
-                              <div className="px-5 py-4">
+                          </div>
+                        </div>
+                        <div className="py-3 px-2">
+                          {isBookingPage && (
+                            <div className="px-5 py-4">
                               <div className="flex items-center justify-center gap-2 text-gray-600">
                                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
                                 <span className="text-xs font-medium">คุณอยู่ในหน้าจองคิว</span>
                               </div>
                             </div>
-                            )}
-                          
-                            {/* Logout Button */}
-                            <div className="border-t border-gray-100 pt-2">
-                              <button
-                                onClick={handleLogout}
-                                className="flex items-center w-full gap-3 px-5 py-3 text-red-600 hover:bg-red-50 transition-all duration-200 group"
-                              >
-                                <LogOut className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
-                                <span className="font-medium">ออกจากระบบ</span>
-                              </button>
+                          )}
+
+                          <div className="my-3 mx-4 border-t border-gray-200/70"></div>
+
+                          <Link
+                            href="/booking"
+                            className="flex items-center w-full gap-4 px-4 py-3.5 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-2xl transition-all duration-300 group mb-1 shadow-md hover:shadow-lg hover:scale-[1.02]"
+                          >
+                            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
+                              <TicketPercent className="h-5 w-5 text-white" />
                             </div>
-                          </div>
+                            <span className="font-semibold text-sm">ประวัติจองคิว</span>
+                          </Link>
+
+                        </div>
+
+                        {/* Logout Button */}
+                        <div className="border-t border-gray-100 pt-2">
+                          <button
+                            onClick={handleLogout}
+                            className="flex items-center w-full gap-3 px-5 py-3 text-red-600 hover:bg-red-50 transition-all duration-200 group"
+                          >
+                            <LogOut className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
+                            <span className="font-medium">ออกจากระบบ</span>
+                          </button>
+                        </div>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -179,47 +194,61 @@ export default function HeaderCustomer() {
                       {showLogout && (
                         <motion.div
                           {...({
-                            initial: { opacity: 0, y: -10 },
-                            animate: { opacity: 1, y: 0 },
-                            exit: { opacity: 0, y: -10 },
-                            transition: { duration: 0.3, ease: "easeOut" },
-                            className: "absolute right-0 top-16 bg-white shadow-2xl border border-gray-100 rounded-2xl py-3 w-72 text-sm overflow-hidden backdrop-blur-sm z-50"
+                            initial: { opacity: 0, y: -10, scale: 0.95 },
+                            animate: { opacity: 1, y: 0, scale: 1 },
+                            exit: { opacity: 0, y: -10, scale: 0.95 },
+                            transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] },
+                            className: "absolute right-0 top-16 bg-gradient-to-br from-white via-gray-50 to-white shadow-2xl border border-gray-200/50 rounded-3xl py-2 w-72 text-sm overflow-hidden backdrop-blur-xl z-50"
                           } as any)}
                         >
                           <div className="flex flex-col">
                             {/* User Profile Section */}
-                            <div className="px-5 py-4 bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
-                              <div className="flex items-center gap-3">
+                            <div className="px-6 py-5 bg-gradient-to-br from-gray-900 to-gray-800 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-tr from-gray-800/50 to-transparent"></div>
+                              <div className="relative flex items-center gap-3">
                                 <img
                                   src={user.pictureUrl}
                                   alt="User profile"
-                                  className="h-12 w-12 rounded-full object-cover border-2 border-gray-200 shadow-sm ring-2 ring-white"
+                                  className="h-14 w-14 rounded-2xl object-cover border-2 border-white/20 shadow-lg ring-2 ring-white/10"
                                 />
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-semibold text-gray-800 truncate">
+                                  <p className="text-sm font-bold text-white truncate">
                                     คุณ {user.displayName}
                                   </p>
-                                  <p className="text-xs text-gray-500 mt-0.5">ผู้ใช้งานทั่วไป</p>
+                                  <p className="text-xs text-gray-300 mt-0.5 font-light">ผู้ใช้งานทั่วไป</p>
                                 </div>
                               </div>
                             </div>
-
-                            {/* Booking Page Info */}
-                            <div className="px-5 py-4">
-                              <div className="flex items-center justify-center gap-2 text-gray-600">
-                                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-                                <span className="text-xs font-medium">คุณอยู่ในหน้าจองคิว</span>
+                            <div className="py-3 px-2">
+                              {/* Booking Page Info */}
+                              <div className="px-6 py-4 bg-gradient-to-r from-green-50 to-emerald-50">
+                                <div className="flex items-center justify-center gap-2 text-gray-700">
+                                  <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50"></div>
+                                  <span className="text-xs font-semibold">คุณอยู่ในหน้าจองคิว</span>
+                                </div>
                               </div>
+
+                              <div className="my-3 mx-4 border-t border-gray-200/70"></div>
+
+                              <Link
+                                href="/booking"
+                                className="flex items-center w-full gap-4 px-4 py-3.5 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-2xl transition-all duration-300 group mb-1 shadow-md hover:shadow-lg hover:scale-[1.02]"
+                              >
+                                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
+                                  <TicketPercent className="h-5 w-5 text-white" />
+                                </div>
+                                <span className="font-semibold text-sm">ประวัติจองคิว</span>
+                              </Link>
                             </div>
 
                             {/* Logout Button */}
-                            <div className="border-t border-gray-100 pt-2">
+                            <div className="border-t border-gray-200/70 px-2 pb-2 pt-3">
                               <button
                                 onClick={handleLogout}
-                                className="flex items-center w-full gap-3 px-5 py-3 text-red-600 hover:bg-red-50 transition-all duration-200 group"
+                                className="flex items-center justify-center w-full gap-3 px-4 py-3.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-2xl transition-all duration-300 group shadow-sm hover:shadow-md"
                               >
-                                <LogOut className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
-                                <span className="font-medium">ออกจากระบบ</span>
+                                <LogOut className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" />
+                                <span className="font-semibold text-sm">ออกจากระบบ</span>
                               </button>
                             </div>
                           </div>
@@ -232,84 +261,94 @@ export default function HeaderCustomer() {
                     {showLogout && (
                       <motion.div
                         {...({
-                          initial: { opacity: 0, y: -10 },
-                          animate: { opacity: 1, y: 0 },
-                          exit: { opacity: 0, y: -10 },
-                          transition: { duration: 0.3, ease: "easeOut" },
-                          className: "absolute right-0 top-16 bg-white shadow-2xl border border-gray-100 rounded-2xl py-3 w-72 text-sm overflow-hidden backdrop-blur-sm z-50"
+                          initial: { opacity: 0, y: -10, scale: 0.95 },
+                          animate: { opacity: 1, y: 0, scale: 1 },
+                          exit: { opacity: 0, y: -10, scale: 0.95 },
+                          transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] },
+                          className: "absolute right-0 top-16 bg-gradient-to-br from-white via-gray-50 to-white shadow-2xl border border-gray-200/50 rounded-3xl py-2 w-72 text-sm overflow-hidden backdrop-blur-xl z-50"
                         } as any)}
                       >
                         <div className="flex flex-col">
                           {/* User Profile Section */}
-                          <div className="px-5 py-4 bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
-                            <div className="flex items-center gap-3">
+                          <div className="px-6 py-5 bg-gradient-to-br from-gray-900 to-gray-800 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-gray-800/50 to-transparent"></div>
+                            <div className="relative flex items-center gap-3">
                               <img
                                 src={user.pictureUrl}
                                 alt="User profile"
-                                className="h-12 w-12 rounded-full object-cover border-2 border-gray-200 shadow-sm ring-2 ring-white"
+                                className="h-14 w-14 rounded-2xl object-cover border-2 border-white/20 shadow-lg ring-2 ring-white/10"
                               />
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-gray-800 truncate">
+                                <p className="text-sm font-bold text-white truncate">
                                   คุณ {user.displayName}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-0.5">ผู้ใช้งานทั่วไป</p>
+                                <p className="text-xs text-gray-300 mt-0.5 font-light">ผู้ใช้งานทั่วไป</p>
                               </div>
                             </div>
                           </div>
 
                           {/* Menu Items */}
-                          <div className="py-2">
+                          <div className="py-3 px-2">
                             <Link
                               href="#services"
-                              className="flex items-center w-full gap-3 px-5 py-3 text-gray-700 hover:bg-gray-50 transition-all duration-200 group"
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1"
                             >
-                              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                                <span className="text-xs"><Scissors className="h-5 w-5" /></span>
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                                <Scissors className="h-5 w-5 text-gray-700" />
                               </div>
-                              <span className="font-medium">บริการ</span>
+                              <span className="font-medium text-sm">บริการ</span>
                             </Link>
 
                             <Link
                               href="#stylists"
-                              className="flex items-center w-full gap-3 px-5 py-3 text-gray-700 hover:bg-gray-50 transition-all duration-200 group"
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1"
                             >
-                              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                                <span className="text-xs"><UsersRound className="h-5 w-5" /></span>
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                                <UsersRound className="h-5 w-5 text-gray-700" />
                               </div>
-                              <span className="font-medium">ช่างผม</span>
+                              <span className="font-medium text-sm">ช่างผม</span>
                             </Link>
 
                             <Link
                               href="#gallery"
-                              className="flex items-center w-full gap-3 px-5 py-3 text-gray-700 hover:bg-gray-50 transition-all duration-200 group"
+                              className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1"
                             >
-                              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                                <span className="text-xs"><FileImage className="h-5 w-5" /></span>
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                                <FileImage className="h-5 w-5 text-gray-700" />
                               </div>
-                              <span className="font-medium">ผลงาน</span>
+                              <span className="font-medium text-sm">ผลงาน</span>
                             </Link>
 
-                            <div className="my-2 mx-5 border-t border-gray-100"></div>
+                            <div className="my-3 mx-4 border-t border-gray-200/70"></div>
 
                             <Link
                               href="/booking"
-                              className="flex items-center w-full gap-3 px-5 py-3 text-blue-600 hover:bg-blue-50 transition-all duration-200 group"
+                              className="flex items-center w-full gap-4 px-4 py-3.5 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-2xl transition-all duration-300 group mb-1 shadow-md hover:shadow-lg hover:scale-[1.02]"
                             >
-                              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <span className="text-xs"><TicketPercent className="h-5 w-5" /></span>
+                              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
+                                <TicketPercent className="h-5 w-5 text-white" />
                               </div>
-                              <span className="font-semibold">จองคิว</span>
+                              <span className="font-semibold text-sm">จองคิว</span>
+                            </Link>
+                            <Link
+                              href="/booking"
+                              className="flex items-center w-full gap-4 px-4 py-3.5 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-2xl transition-all duration-300 group mb-1 shadow-md hover:shadow-lg hover:scale-[1.02]"
+                            >
+                              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
+                                <TicketPercent className="h-5 w-5 text-white" />
+                              </div>
+                              <span className="font-semibold text-sm">ประวัติจองคิว</span>
                             </Link>
                           </div>
 
                           {/* Logout Button */}
-                          <div className="border-t border-gray-100 pt-2">
+                          <div className="border-t border-gray-200/70 px-2 pb-2 pt-3">
                             <button
                               onClick={handleLogout}
-                              className="flex items-center w-full gap-3 px-5 py-3 text-red-600 hover:bg-red-50 transition-all duration-200 group"
+                              className="flex items-center justify-center w-full gap-3 px-4 py-3.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-2xl transition-all duration-300 group shadow-sm hover:shadow-md"
                             >
-                              <LogOut className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
-                              <span className="font-medium">ออกจากระบบ</span>
+                              <LogOut className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" />
+                              <span className="font-semibold text-sm">ออกจากระบบ</span>
                             </button>
                           </div>
                         </div>
@@ -323,73 +362,64 @@ export default function HeaderCustomer() {
                 {showLogout && (
                   <motion.div
                     {...({
-                      initial: { opacity: 0, y: -10 },
-                      animate: { opacity: 1, y: 0 },
-                      exit: { opacity: 0, y: -10 },
-                      transition: { duration: 0.3, ease: "easeOut" },
-                      className: "absolute right-0 top-16 bg-white shadow-2xl border border-gray-100 rounded-2xl py-3 w-72 text-sm overflow-hidden backdrop-blur-sm z-50"
+                      initial: { opacity: 0, y: -10, scale: 0.95 },
+                      animate: { opacity: 1, y: 0, scale: 1 },
+                      exit: { opacity: 0, y: -10, scale: 0.95 },
+                      transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] },
+                      className: "absolute right-0 top-16 bg-gradient-to-br from-white via-gray-50 to-white shadow-2xl border border-gray-200/50 rounded-3xl py-2 w-72 text-sm overflow-hidden backdrop-blur-xl z-50"
                     } as any)}
                   >
                     <div className="flex flex-col">
                       {/* Guest Header */}
-                      <div className="px-5 py-4 bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-800">เมนู</p>
-                        <p className="text-xs text-gray-500 mt-0.5">สำหรับผู้เยี่ยมชม</p>
+                      <div className="px-6 py-5 bg-gradient-to-br from-gray-900 to-gray-800 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-gray-800/50 to-transparent"></div>
+                        <div className="relative">
+                          <p className="text-base font-bold text-white tracking-wide">เมนู</p>
+                          <p className="text-xs text-gray-300 mt-1 font-light">สำหรับผู้เยี่ยมชม</p>
+                        </div>
                       </div>
 
                       {/* Menu Items */}
-                      <div className="py-2">
+                      <div className="py-3 px-2">
                         <Link
                           href="#services"
-                          className="flex items-center w-full gap-3 px-5 py-3 text-gray-700 hover:bg-gray-50 transition-all duration-200 group"
+                          className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                            <span className="text-xs"><Scissors className="h-5 w-5" /></span>
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                            <Scissors className="h-5 w-5 text-gray-700" />
                           </div>
-                          <span className="font-medium">บริการ</span>
+                          <span className="font-medium text-sm">บริการ</span>
                         </Link>
 
                         <Link
                           href="#stylists"
-                          className="flex items-center w-full gap-3 px-5 py-3 text-gray-700 hover:bg-gray-50 transition-all duration-200 group"
+                          className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                            <span className="text-xs"><UsersRound className="h-5 w-5" /></span>
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                            <UsersRound className="h-5 w-5 text-gray-700" />
                           </div>
-                          <span className="font-medium">ช่างผม</span>
+                          <span className="font-medium text-sm">ช่างผม</span>
                         </Link>
 
                         <Link
                           href="#gallery"
-                          className="flex items-center w-full gap-3 px-5 py-3 text-gray-700 hover:bg-gray-50 transition-all duration-200 group"
+                          className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                            <span className="text-xs"><FileImage className="h-5 w-5" /></span>
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
+                            <FileImage className="h-5 w-5 text-gray-700" />
                           </div>
-                          <span className="font-medium">ผลงาน</span>
-                        </Link>
-
-                        <div className="my-2 mx-5 border-t border-gray-100"></div>
-
-                        <Link
-                          href="/booking"
-                          className="flex items-center w-full gap-3 px-5 py-3 text-blue-600 hover:bg-blue-50 transition-all duration-200 group"
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                            <span className="text-xs"><TicketPercent className="h-5 w-5" /></span>
-                          </div>
-                          <span className="font-semibold">จองคิว</span>
+                          <span className="font-medium text-sm">ผลงาน</span>
                         </Link>
                       </div>
 
                       {/* Login Button */}
-                      <div className="border-t border-gray-100 pt-2">
+                      <div className="border-t border-gray-200/70 px-2 pb-2 pt-3">
                         <button
                           onClick={handleLineLogin}
-                          className="flex items-center w-full gap-3 px-5 py-3 text-blue-600 hover:bg-blue-50 transition-all duration-200 group"
+                          className="flex items-center justify-center w-full gap-3 px-4 py-3.5 text-gray-800 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 rounded-2xl transition-all duration-300 group shadow-sm hover:shadow-md"
                         >
-                          <LogOut className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" />
-                          <span className="font-medium">เข้าสู่ระบบ</span>
+                          <User className="w-5 h-5 text-gray-700 group-hover:scale-110 transition-transform" />
+                          <span className="font-semibold text-sm">เข้าสู่ระบบ</span>
                         </button>
                       </div>
                     </div>

@@ -1,7 +1,10 @@
 "use client";
 import { Scissors, Instagram, Facebook, Phone, Mail, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSystem } from "@/context/SystemContext";
 export default function FooterCustomer() {
+
+  const { system } = useSystem();
 
   const [emailLink, setEmailLink] = useState("mailto:prakaidoawhiardesign@gmail.com");
 
@@ -29,16 +32,12 @@ export default function FooterCustomer() {
               </div>
               <div>
                 <span className="text-xl sm:text-2xl tracking-wider text-gray-900 font-light leading-tight block">
-                  Prakaidoaw
-                </span>
-                <span className="text-xl sm:text-2xl tracking-wider text-gray-900 font-light leading-tight block">
-                  Hair&Nail Design
+                  {system?.shop_name  || "Prakaidoaw"}
                 </span>
               </div>
             </div>
             <p className="text-gray-600 text-sm sm:text-base font-light leading-relaxed mb-6">
-              ร้านทำผมที่ใส่ใจทุกรายละเอียด<br />
-              เพื่อความงามและความพึงพอใจ
+              {system?.description}
             </p>
             <div className="w-16 h-px bg-gradient-to-r from-gray-400 to-transparent"></div>
           </div>
@@ -51,10 +50,28 @@ export default function FooterCustomer() {
             <div className="space-y-3">
               <div>
                 <span className="block text-gray-500 text-sm mb-1.5">
-                  จันทร์ - อาทิตย์
+                  {system?.open_days
+                    ? (() => {
+                        const mapTH: Record<string, string> = {
+                          mon: "จันทร์",
+                          tue: "อังคาร",
+                          wed: "พุธ",
+                          thu: "พฤหัสบดี",
+                          fri: "ศุกร์",
+                          sat: "เสาร์",
+                          sun: "อาทิตย์",
+                        };
+
+                        const days = system.open_days
+                          .split(",")
+                          .map((day) => mapTH[day.trim().toLowerCase()] || day);
+
+                        return days.length === 7 ? "จันทร์ - อาทิตย์" : days.join(" - ");
+                      })()
+                    : "จันทร์ - อาทิตย์"}
                 </span>
                 <span className="text-gray-900 text-lg sm:text-xl font-light">
-                  08:00 - 22:00
+                  {system?.open_time?.slice(0, 5)} - {system?.close_time?.slice(0, 5)}
                 </span>
               </div>
             </div>
@@ -67,16 +84,16 @@ export default function FooterCustomer() {
             </h4>
             <div className="space-y-4">
               {[
-                { icon: Phone, text: "090 213 6159", href: "tel:0902136159" },
+                { icon: Phone, text: system?.phone, href: `tel:${system?.phone?.replace(/\s+/g, "")}` },
                 {
                   icon: Mail,
-                  text: "prakaidoawhiardesign@gmail.com",
+                  text: system?.email,
                   href: emailLink,
                 },
                 {
                   icon: MapPin,
-                  text: "748 ถนนราษฎอุทิศ ต.หาดใหญ่ อ.หาดใหญ่ จ.สงขลา",
-                  href: "https://maps.app.goo.gl/J9k2ehVRHK8WK5EX6",
+                  text: system?.address,
+                  href: system?.maps,
                 },
               ].map((item, i) => (
                 <a
@@ -104,11 +121,11 @@ export default function FooterCustomer() {
               {[
                 {
                   icon: Instagram,
-                  url: "https://www.instagram.com/prakaidoaw.hairdesign",
+                  url: system?.instagram,
                 },
                 {
                   icon: Facebook,
-                  url: "https://www.facebook.com/p/Prakaidoaw-Hair-Design-100064100260679",
+                  url: system?.facebook,
                 },
               ].map(({ icon: Icon, url }, i) => (
                 <a
@@ -154,7 +171,7 @@ export default function FooterCustomer() {
         {/* Bottom */}
         <div className="pt-8 sm:pt-10 border-t border-gray-300/60 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
           <p className="text-gray-400 text-xs sm:text-sm font-light tracking-wide">
-            © 2025 Prakaidoaw Hair&Nail Design. All rights reserved.
+            © {new Date().getFullYear()} {system?.shop_name}. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center gap-5 sm:gap-8 text-xs sm:text-sm font-light text-gray-500">
             <a href="#" className="hover:text-gray-900 transition-colors">

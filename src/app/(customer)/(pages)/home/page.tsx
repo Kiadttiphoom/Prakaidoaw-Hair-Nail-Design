@@ -23,6 +23,7 @@ export default function HomePage() {
 
   const [services, setServices] = useState<any[]>([]);
   const [stylists, setStylists] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
 
   const heroSlides = [
     {
@@ -48,33 +49,6 @@ export default function HomePage() {
     },
   ];
 
-  const testimonials = [
-    {
-      name: "คุณพิมพ์ชนก ส.",
-      rating: 5,
-      comment:
-        "ประทับใจมากค่ะ ช่างใส่ใจทุกรายละเอียด ผมออกมาสวยเป๊ะตรงใจ บรรยากาศในร้านก็ดีมาก จะกลับมาใช้บริการอีกแน่นอน",
-      image:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
-    },
-    {
-      name: "คุณณัฐวุฒิ จ.",
-      rating: 5,
-      comment:
-        "บรรยากาศดี สะอาด เป็นส่วนตัว ช่างให้คำแนะนำดีมาก คุ้มค่ากับราคาที่จ่ายไป ครั้งต่อไปจะมาอีกแน่นอนครับ",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
-    },
-    {
-      name: "คุณอารยา ว.",
-      rating: 5,
-      comment:
-        "ย้อมสีออกมาสวยมาก คุณภาพดี ไม่ทำลายเส้นผม พนักงานบริการดีเยี่ยม แนะนำเลยค่ะ ราคาดีด้วย",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
-    },
-  ];
-
   const gallery = [
     "https://images.unsplash.com/photo-1522337094846-8a818192de1f?w=600&q=80",
     "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&q=80",
@@ -87,18 +61,20 @@ export default function HomePage() {
   useEffect(() => {
     Promise.all([
       fetch("/api/services").then((res) => res.json()),
-      fetch("/api/stylists").then((res) => res.json())
+      fetch("/api/stylists").then((res) => res.json()),
+      fetch("/api/review").then((res) => res.json())
     ])
-      .then(([servicesData, stylistsData]) => {
+      .then(([servicesData, stylistsData,reviewsData]) => {
         setServices(servicesData.data.services);
         setStylists(stylistsData.data.stylists);
+        setReviews(reviewsData.data.reviews);
       })
       .catch((err) => console.error());
   }, []);
 
 
   useEffect(() => {
-    if (services.length === 0 && stylists.length === 0) return;
+    if (services.length === 0 && stylists.length === 0 && reviews.length === 0) return;
 
     // เริ่ม observer หลังมีข้อมูลแล้ว
     const observer = new IntersectionObserver(
@@ -126,7 +102,7 @@ export default function HomePage() {
     }));
 
     return () => observer.disconnect();
-  }, [services, stylists]);
+  }, [services, stylists, reviews]);
 
 
   const nextSlide = () =>
@@ -354,7 +330,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* reviews */}
       <section className="sm:py-24 py-12 bg-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-40">
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
@@ -363,14 +339,14 @@ export default function HomePage() {
 
         <div className="max-w-7xl mx-auto sm:px-8 px-4 relative z-10">
           <div
-            id="anim-testimonials"
-            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible["anim-testimonials"]
+            id="anim-reviews"
+            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible["anim-reviews"]
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-16"
               }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.4em] sm:tracking-[0.5em] mb-6 sm:mb-10 font-light uppercase">
-              Testimonials
+              Reviews
             </p>
             <h2 className="text-4xl sm:text-6xl md:text-7xl text-gray-900 font-extralight tracking-tight mb-4 sm:mb-8 leading-none">
               รีวิวจากลูกค้า
@@ -383,28 +359,23 @@ export default function HomePage() {
 
           {/* มือถือ: flex scroll, เดสก์ท็อป: grid */}
           <div className="flex sm:grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12 overflow-x-auto sm:overflow-visible snap-x snap-mandatory scrollbar-hide">
-            {testimonials.map((item, index) => (
+            {reviews.map((item, index) => (
               <div
                 key={index}
-                id={`anim-testimonial-${index}`}
+                id={`anim-review-${index}`}
                 className={`
             bg-gradient-to-br from-gray-50/80 to-white/80 backdrop-blur-sm
             p-8 sm:p-10 md:p-12 rounded-[1.5rem] md:rounded-[2rem]
             hover:shadow-2xl transition-all duration-1000 border border-gray-100/80
             hover:border-gray-200 md:hover:-translate-y-3 text-center
             shrink-0 w-[85%] sm:w-auto snap-center
-            ${isVisible["anim-testimonials"]
+            ${isVisible["anim-reviews"]
                     ? "opacity-100 scale-100"
                     : "opacity-0 scale-95"
                   }`}
                 style={{ transitionDelay: `${index * 180}ms` }}
               >
                 <div className="flex flex-col items-center mb-8">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-2 ring-gray-100 shadow-lg mb-4"
-                  />
                   <span className="text-gray-900 font-light tracking-wide text-base sm:text-lg mb-2">
                     {item.name}
                   </span>

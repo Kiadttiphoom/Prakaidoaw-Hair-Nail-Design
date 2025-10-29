@@ -4,10 +4,11 @@ export async function GET() {
 
   const promisePool = mysqlPool.promise();
 
-  const [stylists] = await promisePool.query<any[]>("SELECT * FROM stylists WHERE is_active = 1");
+  const [reviews] = await promisePool.query<any[]>("SELECT * FROM reviews");
 
   return Response.json({
     message: "success",
-    data: { stylists },
+    data: { reviews: reviews },
   });
 }
+
