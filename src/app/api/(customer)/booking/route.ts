@@ -249,7 +249,7 @@ export async function POST(req: Request) {
       const Strmonth = thaiMonths[date.getMonth()];
       const Stryear = date.getFullYear() + 543;
 
-      const newDate = `${day} ${month} ${year}`;
+      const newDate = `${Strday} ${Strmonth} ${Stryear}`;
 
 
       try {
