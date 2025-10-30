@@ -245,9 +245,11 @@ export async function POST(req: Request) {
         "ธันวาคม",
       ];
 
-      const Strday = date.getDate();
-      const Strmonth = thaiMonths[date.getMonth()];
-      const Stryear = date.getFullYear() + 543;
+      const dateObj = new Date(date + "T00:00:00"); // เพิ่ม T00:00:00 ป้องกัน timezone เพี้ยน
+
+      const Strday = dateObj.getDate();
+      const Strmonth = thaiMonths[dateObj.getMonth()];
+      const Stryear = dateObj.getFullYear() + 543;
 
       const newDate = `${Strday} ${Strmonth} ${Stryear}`;
 
@@ -347,7 +349,7 @@ export async function POST(req: Request) {
             margin: "xl",
             contents: [
               { type: "text", text: "ราคาเริ่มต้น", color: "#aaaaaa", size: "sm", flex: 2 },
-              { type: "text", text: `฿${price_min.toLocaleString("th-TH")}`, wrap: true, color: "#111111", size: "lg", flex: 5, weight: "bold" },
+              { type: "text", text: `${Number(price_min).toLocaleString("th-TH")} บาท`, wrap: true, color: "#111111", size: "lg", flex: 5, weight: "bold" },
             ],
           },
         ];
