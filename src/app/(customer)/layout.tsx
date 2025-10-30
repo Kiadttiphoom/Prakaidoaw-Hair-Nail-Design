@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { UserProvider } from "@/context/UserContext";
+import { SystemProvider } from "@/context/SystemContext";
 import HeaderCustomer from "@/components/customer/header/HeaderCustomer";
 import FooterCustomer from "@/components/customer/footer/FooterCustomer";
 import jwt from "jsonwebtoken";
@@ -17,7 +18,6 @@ export default async function CustomerLayout({
 
   if (token) {
     try {
-      // ✅ ถอดรหัส JWT (เก็บ payload ทั้งหมด)
       const decoded = jwt.verify(token, process.env.JWT_SECRET!);
       user = decoded as {
         user_id: number;
@@ -26,17 +26,36 @@ export default async function CustomerLayout({
         pictureUrl: string;
       };
     } catch (err) {
-      //console.error("❌ Invalid JWT:", err);
+      // Invalid JWT
     }
   }
 
+  // ✅ ดึงข้อมูล system แบบ SSR
+  let systemData = null;
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/system`,
+      { 
+        cache: "force-cache",
+        next: { revalidate: 3600 } // cache 1 ชั่วโมง
+      }
+    );
+    const data = await res.json();
+    systemData = data.data;
+  } catch (err) {
+    console.error("Failed to fetch system data:", err);
+  }
+
   return (
-    <UserProvider initialUser={user}>
-      <div className="min-h-screen flex flex-col bg-white">
-        <HeaderCustomer />
-        <main className="flex-grow">{children}</main>
-        <FooterCustomer />
-      </div>
-    </UserProvider>
+    // ✅ ส่ง systemData เป็น initialData
+    <SystemProvider initialData={systemData}>
+      <UserProvider initialUser={user}>
+        <div className="min-h-screen flex flex-col bg-white">
+          <HeaderCustomer />
+          <main className="flex-grow">{children}</main>
+          <FooterCustomer />
+        </div>
+      </UserProvider>
+    </SystemProvider>
   );
 }

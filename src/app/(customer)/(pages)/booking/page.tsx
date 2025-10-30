@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Calendar, Clock, User, Phone, Mail, ChevronRight, Check } from "lucide-react";
+import { Calendar, Clock, User, Phone, Mail, ChevronRight, Check, X, ShieldAlert } from "lucide-react";
 import BookingSkeleton from "@/components/UI/customer/Skeleton/BookingSkeleton";
 import CustomDatePicker from "@/components/UI/customer/DatePicker/CustomDatePicker";
 import { useSystem } from "@/context/SystemContext";
@@ -8,17 +8,26 @@ import { useSystem } from "@/context/SystemContext";
 export default function BookingPage() {
   const { system } = useSystem();
   const [loading, setLoading] = useState(true);
+  const [spin, setSpin] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   const [popupAuth, setPopupAuth] = useState(false);
+  const [popupMessenger, setPopupMessenger] = useState(false);
+  const [popupMessenger_confirm, setPopupMessenger_confirm] = useState(false);
+  const [popupMessenger_color, setPopupMessenger_color] = useState("");
+  const [popupMessenger_text, setPopupMessenger_text] = useState("");
   const [services, setServices] = useState<any[]>([]);
   const [stylists, setstylists] = useState<any[]>([]);
   const [timeSlots, setTimeSlots] = useState<any[]>([]);
+  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     stylist: "",
     service: "",
     date: "",
     time: "",
-    name: "",
+    prefix: "",
+    firstName: "",
+    lastName: "",
     phone: "",
     email: "",
     note: ""
@@ -88,103 +97,199 @@ export default function BookingPage() {
 
 
   const handleSubmit = async () => {
+    setDisabled(true);
 
-    if (step === 1) {
-      // ✅ ตรวจสอบบริการของช่าง
-      const res = await fetch(`/api/booking`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ step: step, payload: formData.stylist }),
-        credentials: "include"
-      });
-      const data = await res.json();
-      if (data.message === "success") {
-        // เซ็ตบริการที่สามารถเลือกได้
-        setServices(data.data.services);
-        setStep(2);
-      } else {
-        setStep(1);
-        alert("ช่างคนนี้ยังไม่พร้อมให้บริการ กรุณาเลือกใหม่");
+    try {
+      if (step === 1) {
+        // ✅ ตรวจสอบบริการของช่าง
+        const res = await fetch(`/api/booking`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ step: step, payload: formData.stylist }),
+          credentials: "include"
+        });
+        const data = await res.json();
+        if (data.message === "success") {
+          setServices(data.data.services);
+          setStep(2);
+        } else {
+          setStep(1);
+          alert("ช่างคนนี้ยังไม่พร้อมให้บริการ กรุณาเลือกใหม่");
+        }
       }
-    }
-    else if (step === 2) {
-      const res = await fetch(`/api/booking`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ step: step, payload:{stylist:formData.stylist,service:formData.service}}),
-        credentials: "include"
-      });
-      const data = await res.json();
-      console.log(data);
-      if (data.message === "success") {
-        setStep(3);
-      } else {
-        setStep(2);
-        alert("ช่างคนนี้ยังไม่พร้อมให้บริการ กรุณาเลือกใหม่");
-      }
-    }
-    else if (step === 3) {
-      setStep(4);
-    }else if (step === 4) {
-      // Submit การจอง
-      const res = await fetch(`/api/booking`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials:"include",
-        body: JSON.stringify({ step: step, payload: formData }),
-      });
-      const result = await res.json();
+      else if (step === 2) {
+        const res = await fetch(`/api/booking`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ step: step, payload: { stylist: formData.stylist, service: formData.service } }),
+          credentials: "include"
+        });
+        const data = await res.json();
+        console.log(data);
+        if (data.message === "success") {
+          setStep(3);
+        } else {
+          setStep(2);
+          alert("ช่างคนนี้ยังไม่พร้อมให้บริการ กรุณาเลือกใหม่");
+        }
+      } else if (step === 3) {
+        setStep(4);
+      } else if (step === 4) {
+        if (formData.prefix === "") {
+          setPopupMessenger(true);
+          setPopupMessenger_color("warning");
+          setPopupMessenger_text("กรุณากรอกคำนำหน้า");
+          return;
+        }else if (formData.firstName === "") {
+          setPopupMessenger(true);
+          setPopupMessenger_color("warning");
+          setPopupMessenger_text("กรุณากรอกชื่อ");
+          return;
+        } else if (formData.lastName === "") {
+          setPopupMessenger(true);
+          setPopupMessenger_color("warning");
+          setPopupMessenger_text("กรุณากรอกนามสกุล");
+          return;
+        } else if (formData.phone.trim() === "") {
+          setPopupMessenger(true);
+          setPopupMessenger_color("warning");
+          setPopupMessenger_text("กรุณากรอกเบอร์โทรศัพท์");
+          return;
+        } else if (formData.phone.trim() !== "") {
+          const isValidPhone = /^((\+66)|0)[0-9]{9}$/.test(formData.phone.trim());
 
-      if (result.message === "success") {
-        alert("จองคิวสำเร็จ!");
-      } else {
-        alert("เกิดข้อผิดพลาด โปรดลองอีกครั้ง");
+          if (!isValidPhone) {
+            setPopupMessenger(true);
+            setPopupMessenger_color("warning");
+            setPopupMessenger_text("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (เช่น 0812345678)");
+            return;
+          }
+        }else if (formData.email !== "") {
+          const isValidEmail = String(formData.email)
+            .toLowerCase()
+            .match(
+              /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+
+          if (!isValidEmail) {
+            setPopupMessenger(true);
+            setPopupMessenger_color("warning");
+            setPopupMessenger_text("กรุณากรอกอีเมลให้ถูกต้อง");
+            return;
+          }
+        }
+
+        setPopupMessenger_confirm(true);
+        
       }
+    } catch {
+
+    } finally {
+
+      setDisabled(false)
     }
   };
+
+  const handleConfirm = async (confirm : boolean) => {
+    if(confirm){
+        const res = await fetch(`/api/booking`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ step: step, payload: formData }),
+        });
+        const result = await res.json();
+
+        if (result.message === "success") {
+          setPopupMessenger_confirm(false);
+          setPopupMessenger(true);
+          setPopupMessenger_color("success");
+          setPopupMessenger_text("จองคิวสำเร็จ!");
+          setFormData((prev) => ({
+            ...prev,
+            stylist: "",
+            service: "",
+            date: "",
+            time: "",
+            name: "",
+            phone: "",
+            email: "",
+            note: ""
+          }));
+          setSpin(true);
+          setTimeout(function () {
+            window.location.href = "/booking";
+          }, 2000);
+
+        } else {
+          setPopupMessenger_confirm(false);
+          setPopupMessenger(true);
+          setPopupMessenger_color("error");
+          setPopupMessenger_text("เกิดข้อผิดพลาด โปรดลองอีกครั้ง");
+        }
+    }
+  }
 
   useEffect(() => {
     // ถ้ายังไม่เลือกวันหรือยังไม่มีช่าง/บริการ ไม่ต้อง fetch
     if (!formData.date || !formData.stylist || !formData.service) return;
-
-    const fetchAvailableTimes = async () => {
-      try {
-        const res = await fetch("/api/booking", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            step: 3,
-            payload: {
-              stylist_id: formData.stylist,
-              service_id: formData.service,
-              date: formData.date, // ✅ ส่งวันที่ที่เลือก
-            },
-          }),
-        });
-        const data = await res.json();
-        if (data.message === "success") {
-          setTimeSlots(data.data.timeSlots || []);
-        }
-      } catch (err) {
-        console.error("Error fetching times:", err);
-      }
-    };
-
     fetchAvailableTimes();
   }, [formData.date]); // ✅ เมื่อวันที่เปลี่ยน จะดึงเวลาว่างใหม่
 
+  const fetchAvailableTimes = async () => {
+    setSpin(true);
+    try {
+      const res = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          step: 3,
+          payload: {
+            stylist_id: formData.stylist,
+            service_id: formData.service,
+            date: formData.date,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (data.message === "success") {
+        setSpin(false);
+        setTimeSlots(data.data.timeSlots || []);
+        setBookedTimes(data.data.bookedTimes || []);
+      }
+    } catch (err) {
+      setSpin(false);
+      console.error("Error fetching times:", err);
+    }
+  };
+
+  const handleStep = (nextStep: number) => {
+    // ถ้ากำลังจะเปลี่ยนจาก step ที่เกี่ยวกับวันเวลา (3) → step อื่น
+    if (step === 3 || nextStep === 3) {
+      setFormData((prev) => ({
+        ...prev,
+        date: "",
+        time: "", // ✅ เผื่อไว้ให้ล้างเวลาที่เลือกด้วย
+      }));
+      setTimeSlots([]); // ✅ ล้างเวลาว่างทั้งหมด
+    }
+
+    // อัปเดตขั้นตอน
+    setStep(nextStep - 1);
+  };
 
 
   const canProceed = () => {
     if (step === 1) return formData.stylist;
     if (step === 2) return formData.service;
     if (step === 3) return formData.date && formData.time;
-    if (step === 4) return formData.name && formData.phone;
+    if (step === 4) return formData.prefix && formData.firstName && formData.lastName && formData.phone;
     return false;
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
+
       {/* Header */}
       {popupAuth && (
         <div className="fixed inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/50 backdrop-blur-md flex items-center justify-center z-[999] overflow-hidden">
@@ -232,10 +337,189 @@ export default function BookingPage() {
         </div>
       )}
 
+      {popupMessenger && (
+        <div className="fixed inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/50 backdrop-blur-md flex items-center justify-center z-[999] overflow-hidden">
+          <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-3xl shadow-2xl px-8 py-10 w-[90%] max-w-md text-center animate-fade-in-up relative border border-gray-200/50">
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-gray-900 to-gray-700 rounded-full opacity-10 blur-2xl"></div>
+
+            {/* Icon */}
+            <div
+              className={`w-16 h-16 mx-auto mb-5 rounded-2xl flex items-center justify-center shadow-lg ${popupMessenger_color === "error"
+                ? "bg-gradient-to-br from-red-900 to-red-800"
+                : popupMessenger_color === "success"
+                  ? "bg-gradient-to-br from-green-900 to-green-800"
+                  : "bg-gradient-to-br from-yellow-900 to-yellow-800"
+                }`}
+            >
+              {popupMessenger_color === "error" ?
+                (
+                  <X className="w-8 h-8 text-white" />
+                ) : popupMessenger_color === "success" ? (
+                  <Check className="w-8 h-8 text-white" />
+                ) : (
+                  <ShieldAlert className="w-8 h-8 text-white" />
+                )
+              }
+
+            </div>
+
+            <h3 className="text-gray-900 text-2xl font-bold mb-3 tracking-tight">
+
+              {popupMessenger_color === "error" ?
+                (
+                  "เกิดข้อผิดพลาด"
+                ) : popupMessenger_color === "success" ? (
+                  "สำเร็จ"
+                ) : (
+                  "คำเตือน"
+                )
+              }
+            </h3>
+            <p className="text-gray-600 text-sm mb-8 leading-relaxed px-2">
+              {popupMessenger_text}
+            </p>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => { setPopupMessenger(false), setPopupMessenger_color(""), setPopupMessenger_text("") }}
+                className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white px-6 py-3.5 rounded-2xl text-sm font-semibold tracking-wide hover:from-gray-800 hover:to-gray-700 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
+              >
+                ตกลง
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {popupMessenger_confirm && (
+        <div className="fixed inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/50 backdrop-blur-md flex items-center justify-center z-[999] overflow-hidden">
+          <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-3xl shadow-2xl px-8 py-10 w-[90%] max-w-lg text-center animate-fade-in-up relative border border-gray-200/50 max-h-[90vh] overflow-y-auto">
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-gray-900 to-gray-700 rounded-full opacity-10 blur-2xl"></div>
+
+            {/* Icon */}
+            <div className="w-16 h-16 mx-auto mb-5 bg-gradient-to-br from-yellow-900 to-yellow-800 rounded-2xl flex items-center justify-center shadow-lg">
+              <ShieldAlert className="w-8 h-8 text-white" />
+            </div>
+
+            <h3 className="text-gray-900 text-2xl font-bold mb-3 tracking-tight">
+              ยืนยันการจองบริการ
+            </h3>
+            <p className="text-gray-500 text-sm mb-6">
+              กรุณาตรวจสอบข้อมูลก่อนยืนยัน
+            </p>
+
+            {/* ข้อมูลที่เลือก */}
+            <div className="bg-gray-50 rounded-2xl p-5 mb-6 text-left space-y-4">
+              {/* ช่าง */}
+              <div className="flex items-start gap-3">
+                <User className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 mb-1">ช่าง</p>
+                  <p className="text-sm text-gray-900 font-medium">
+                    {stylists.find(s => s.id === formData.stylist)?.name || "-"}
+                  </p>
+                </div>
+              </div>
+
+              {/* บริการ */}
+              <div className="flex items-start gap-3">
+                <Calendar className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 mb-1">บริการ</p>
+                  <p className="text-sm text-gray-900 font-medium">
+                    {services.find(s => s.id === formData.service)?.title || "-"}
+                  </p>
+                </div>
+              </div>
+
+              {/* วันที่และเวลา */}
+              <div className="flex items-start gap-3">
+                <Clock className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 mb-1">วันที่และเวลา</p>
+                  <p className="text-sm text-gray-900 font-medium">
+                    {formData.date ? new Date(formData.date + 'T00:00:00').toLocaleDateString('th-TH', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric',
+                      timeZone: 'Asia/Bangkok'
+                    }) : "-"} เวลา {formData.time || "-"} น.
+                  </p>
+                </div>
+              </div>
+
+              {/* ชื่อ-นามสกุล */}
+              <div className="flex items-start gap-3">
+                <User className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 mb-1">ชื่อ-นามสกุล</p>
+                  <p className="text-sm text-gray-900 font-medium">
+                    {formData.prefix} {formData.firstName} {formData.lastName}
+                  </p>
+                </div>
+              </div>
+
+              {/* เบอร์โทร */}
+              <div className="flex items-start gap-3">
+                <Phone className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 mb-1">เบอร์โทรศัพท์</p>
+                  <p className="text-sm text-gray-900 font-medium">{formData.phone}</p>
+                </div>
+              </div>
+
+              {/* อีเมล (ถ้ามี) */}
+              {formData.email && (
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-500 mb-1">อีเมล</p>
+                    <p className="text-sm text-gray-900 font-medium">{formData.email}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* หมายเหตุ (ถ้ามี) */}
+              {formData.note && (
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-500 mb-1">หมายเหตุ</p>
+                    <p className="text-sm text-gray-900 font-light">{formData.note}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => handleConfirm(true)}
+                className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white px-6 py-3.5 rounded-2xl text-sm font-semibold tracking-wide hover:from-gray-800 hover:to-gray-700 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
+              >
+                ยืนยันการจอง
+              </button>
+              <button
+                onClick={() => setPopupMessenger_confirm(false)}
+                className="w-full bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-6 py-3.5 rounded-2xl text-sm font-semibold tracking-wide hover:from-gray-200 hover:to-gray-300 transition-all shadow-md hover:shadow-lg hover:scale-[1.02]"
+              >
+                แก้ไขข้อมูล
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <BookingSkeleton />
       ) :
         <>
+          {spin && (
+            <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+              <div className="w-12 h-12 border-4 border-white/60 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
           <div className="max-w-7xl mx-auto px-5 sm:px-8 py-5 sm:py-6 mt-20">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -275,8 +559,8 @@ export default function BookingPage() {
                     <div className="flex flex-col items-center">
                       <div
                         className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${step >= item.num
-                            ? "bg-gray-900 border-gray-900 text-white"
-                            : "bg-white border-gray-200 text-gray-400"
+                          ? "bg-gray-900 border-gray-900 text-white"
+                          : "bg-white border-gray-200 text-gray-400"
                           }`}
                       >
                         {step > item.num ? (
@@ -316,8 +600,8 @@ export default function BookingPage() {
                         key={stylist.id}
                         onClick={() => setFormData({ ...formData, stylist: stylist.id })}
                         className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border-2 transition-all duration-300 text-left hover:shadow-lg ${formData.stylist === stylist.id
-                            ? "border-gray-900 bg-gray-50 shadow-md"
-                            : "border-gray-200 hover:border-gray-300"
+                          ? "border-gray-900 bg-gray-50 shadow-md"
+                          : "border-gray-200 hover:border-gray-300"
                           }`}
                       >
                         {/* รูปภาพ */}
@@ -371,8 +655,8 @@ export default function BookingPage() {
                         key={service.id}
                         onClick={() => setFormData({ ...formData, service: service.id })}
                         className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border-2 transition-all duration-300 text-left hover:shadow-lg ${formData.service === service.id
-                            ? "border-gray-900 bg-gray-50 shadow-md"
-                            : "border-gray-200 hover:border-gray-300"
+                          ? "border-gray-900 bg-gray-50 shadow-md"
+                          : "border-gray-200 hover:border-gray-300"
                           }`}
                       >
                         {/* รูปภาพ */}
@@ -446,33 +730,38 @@ export default function BookingPage() {
                     </label>
                     <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
                       {timeSlots.map((time) => {
-                        // Check ว่าเป็นวันนี้หรือไม่
                         const isToday = formData.date === new Date().toISOString().split('T')[0];
 
-                        // ถ้าเป็นวันนี้ ต้อง check เวลาปัจจุบัน
+                        // ✅ เวลาในอดีต
                         let isTimeDisabled = false;
                         if (isToday) {
                           const now = new Date();
                           const currentHour = now.getHours();
                           const currentMinute = now.getMinutes();
-                          const [timeHour, timeMinute] = time.split(':').map(Number);
+                          const normalized = time.includes(':') ? time : time.replace('.', ':');
+                          const [timeHour, timeMinute] = normalized.split(':').map(Number);
 
-                          // Disable ถ้าเวลาผ่านไปแล้ว
                           if (timeHour < currentHour || (timeHour === currentHour && timeMinute <= currentMinute)) {
                             isTimeDisabled = true;
                           }
                         }
 
+                        // ✅ เวลาใน bookedTimes
+                        const isBooked = bookedTimes.includes(time);
+
                         return (
                           <button
                             key={time}
-                            onClick={() => !isTimeDisabled && setFormData({ ...formData, time })}
-                            disabled={isTimeDisabled}
-                            className={`py-3 sm:py-4 px-4 rounded-xl border-2 text-sm sm:text-base font-light transition-all duration-300 ${isTimeDisabled
-                                ? "border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed"
-                                : formData.time === time
-                                  ? "border-gray-900 bg-gray-900 text-white shadow-md"
-                                  : "border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-md bg-white"
+                            onClick={() => !isTimeDisabled && !isBooked && setFormData({ ...formData, time })}
+                            disabled={isTimeDisabled || isBooked}
+                            className={`py-3 sm:py-4 px-4 rounded-xl border-2 text-sm sm:text-base font-medium transition-all duration-300
+                              ${isBooked
+                                ? "border-red-300 bg-red-50 text-red-400 cursor-not-allowed opacity-60" // 🔴 จองแล้ว - โทนแดงอ่อน
+                                : isTimeDisabled
+                                  ? "border-gray-200 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50" // ⚪ เลยเวลาแล้ว - โทนเทาอ่อน
+                                  : formData.time === time
+                                    ? "border-gray-900 bg-gray-900 text-white shadow-lg" // ⚫ เลือกอยู่ - ดำ
+                                    : "border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:shadow-md hover:bg-gray-50" // ⚪ ว่าง - ขาวขอบเทา
                               }`}
                           >
                             {time}
@@ -491,18 +780,59 @@ export default function BookingPage() {
                     ข้อมูลการติดต่อ
                   </h3>
 
-                  <div>
-                    <label className="flex items-center gap-2 text-base text-gray-700 font-light mb-3">
-                      <User className="w-5 h-5" strokeWidth={1.5} />
-                      ชื่อ-นามสกุล
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="กรอกชื่อของคุณ"
-                      className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
-                    />
+                  <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-4">
+                    {/* คำนำหน้า */}
+                    <div className="lg:col-span-3">
+                      <label className="flex items-center gap-2 text-base text-gray-700 font-light mb-3">
+                        <User className="w-5 h-5" strokeWidth={1.5} />
+                        คำนำหน้า
+                      </label>
+                      <select
+                        value={formData.prefix || ''}
+                        onChange={(e) => setFormData({ ...formData, prefix: e.target.value })}
+                        className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors bg-white appearance-none"
+                        style={{
+                          backgroundImage: 'none'
+                        }}
+                      >
+                        <option value="">เลือกคำนำหน้า</option>
+                        <option value="นาย">นาย</option>
+                        <option value="นาง">นาง</option>
+                        <option value="นางสาว">นางสาว</option>
+                        <option value="เด็กชาย">เด็กชาย</option>
+                        <option value="เด็กหญิง">เด็กหญิง</option>
+                      </select>
+                    </div>
+
+                    {/* ชื่อ */}
+                    <div className="lg:col-span-4">
+                      <label className="flex items-center gap-2 text-base text-gray-700 font-light mb-3">
+                        <User className="w-5 h-5" strokeWidth={1.5} />
+                        ชื่อ
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.firstName || ''}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        placeholder="กรอกชื่อของคุณ"
+                        className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+                      />
+                    </div>
+
+                    {/* นามสกุล */}
+                    <div className="lg:col-span-5">
+                      <label className="flex items-center gap-2 text-base text-gray-700 font-light mb-3">
+                        <User className="w-5 h-5" strokeWidth={1.5} />
+                        นามสกุล
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.lastName || ''}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        placeholder="กรอกนามสกุลของคุณ"
+                        className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -552,19 +882,50 @@ export default function BookingPage() {
               <div className="flex gap-4 mt-10 pt-8 border-t border-gray-200">
                 {step > 1 && (
                   <button
-                    onClick={() => setStep(step - 1)}
+                    onClick={() => handleStep(step)}
+                    disabled={disabled}
                     className="text-xs sm:text-base flex-1 px-8 py-4 rounded-full border-2 border-gray-200 text-gray-700 font-light hover:border-gray-300 transition-all duration-300"
                   >
                     ย้อนกลับ
                   </button>
                 )}
+
                 <button
                   onClick={handleSubmit}
                   disabled={!canProceed()}
                   className="text-xs sm:text-base flex-1 px-8 py-4 rounded-full bg-gray-900 text-white font-light hover:bg-gray-800 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {step === 4 ? "ยืนยันการจอง" : "ถัดไป"}
-                  <ChevronRight className="w-5 h-5" strokeWidth={2} />
+                  {disabled ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0
+                            c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      กำลัง...
+                    </span>
+                  ) : (
+                    <>
+                      {step === 4 ? "ยืนยันการจอง" : "ถัดไป"}
+                      <ChevronRight className="w-5 h-5" strokeWidth={2} />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
