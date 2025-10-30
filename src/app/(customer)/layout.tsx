@@ -34,7 +34,7 @@ export default async function CustomerLayout({
   let systemData = null;
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/system`,
+      `${process.env.API_URL || "http://localhost:3000"}/api/system`,
       { 
         cache: "force-cache",
         next: { revalidate: 3600 } // cache 1 ชั่วโมง

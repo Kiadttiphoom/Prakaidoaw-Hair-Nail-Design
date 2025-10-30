@@ -4,13 +4,13 @@ import HomeClient from "./HomeClient";
 export default async function HomePage() {
   // ✅ Parallel fetching - โหลดพร้อมกัน 3 API
   const [servicesRes, stylistsRes, reviewsRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/services`, {
+    fetch(`${process.env.API_URL  || "http://localhost:3000"}/api/services`, {
       cache: "no-store", // หรือ revalidate: 60 ถ้าต้องการ cache
     }),
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/stylists`, {
+    fetch(`${process.env.API_URL  || "http://localhost:3000"}/api/stylists`, {
       cache: "no-store",
     }),
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/review`, {
+    fetch(`${process.env.API_URL || "http://localhost:3000"}/api/review`, {
       cache: "no-store",
     }),
   ]);
