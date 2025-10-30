@@ -230,6 +230,28 @@ export async function POST(req: Request) {
         ]
       );
 
+      const thaiMonths = [
+        "มกราคม",
+        "กุมภาพันธ์",
+        "มีนาคม",
+        "เมษายน",
+        "พฤษภาคม",
+        "มิถุนายน",
+        "กรกฎาคม",
+        "สิงหาคม",
+        "กันยายน",
+        "ตุลาคม",
+        "พฤศจิกายน",
+        "ธันวาคม",
+      ];
+
+      const Strday = date.getDate();
+      const Strmonth = thaiMonths[date.getMonth()];
+      const Stryear = date.getFullYear() + 543;
+
+      const newDate = `${day} ${month} ${year}`;
+
+
       try {
         const [stylists] = await promisePool.query<any[]>(`SELECT name FROM stylists WHERE id = ?`, [stylist]);
         const [services] = await promisePool.query<any[]>(`SELECT Title FROM services WHERE id = ?`, [service]);
@@ -305,7 +327,7 @@ export async function POST(req: Request) {
             margin: "xl",
             contents: [
               { type: "text", text: "วันที่", color: "#aaaaaa", size: "sm", flex: 2 },
-              { type: "text", text: date, wrap: true, color: "#666666", size: "sm", flex: 5 },
+              { type: "text", text: newDate, wrap: true, color: "#666666", size: "sm", flex: 5 },
             ],
           },
           {
