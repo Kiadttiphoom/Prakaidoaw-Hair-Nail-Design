@@ -106,25 +106,25 @@ export async function POST(req: Request) {
       // 5️⃣ สร้างช่วงเวลาเป็น “ทุกชั่วโมง”
       const slots: string[] = [];
       const bookedTimes: string[] = []; // ✅ เก็บเวลาที่จองแล้ว
-      const workStartDate = new Date(`${date}T${open_time}+07:00`);
-      const workEndDate = new Date(`${date}T${close_time}+07:00`);
+      const workStartDate = new Date(`${date}T${open_time}`);
+      const workEndDate = new Date(`${date}T${close_time}`);
       const stepMin = 60;
 
       for (
-        let t = new Date(`${date}T${open_time}+07:00`);
-        t < new Date(`${date}T${close_time}+07:00`);
+        let t = new Date(`${date}T${open_time}`);
+        t < new Date(`${date}T${close_time}`);
         t = new Date(t.getTime() + stepMin * 60000)
       ) {
         const start = new Date(t);
         const end = new Date(start.getTime() + duration_min * 60000);
-        const workEndDate = new Date(`${date}T${close_time}+07:00`);
+        const workEndDate = new Date(`${date}T${close_time}`);
 
         // ถ้าจบหลังเวลาปิดร้าน → ข้าม
         if (end > workEndDate) continue;
 
         const overlap = bookings.some((b: any) => {
           const normalized = b.booking_time.replace('.', ':');
-          const bStart = new Date(`${date}T${normalized}+07:00`);
+          const bStart = new Date(`${date}T${normalized}`);
           const dur = serviceMap.get(b.service_id) || 60;
           const bEnd = new Date(bStart.getTime() + dur * 60000);
           return start < bEnd && end > bStart;
