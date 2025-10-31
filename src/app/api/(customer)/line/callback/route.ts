@@ -114,7 +114,7 @@ export async function GET(req: Request) {
 
     const promisePool = mysqlPool.promise();
 
-    // 1️⃣ ขอ token จาก LINE
+    // 1️⃣ ขอ token จาก LINE Login
     const tokenRes = await fetch("https://api.line.me/oauth2/v2.1/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -137,18 +137,32 @@ export async function GET(req: Request) {
 
     const access_token = tokenData.access_token;
 
-    // 2️⃣ ดึงโปรไฟล์ผู้ใช้
+    // 2️⃣ ดึงข้อมูลโปรไฟล์ผู้ใช้
     const profileRes = await fetch("https://api.line.me/v2/profile", {
       headers: { Authorization: `Bearer ${access_token}` },
     });
     const profile = await profileRes.json();
 
-    // 3️⃣ ตรวจสถานะเพื่อน
-    const friendshipRes = await fetch("https://api.line.me/friendship/v1/status", {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
-    const friendship = await friendshipRes.json();
-    const isFriend = friendship.friendFlag;
+    // 3️⃣ ตรวจสถานะเพื่อนด้วย Messaging API (แทน friendship_status)
+    let isFriend = false;
+    try {
+      const friendCheck = await fetch(
+        `https://api.line.me/v2/bot/profile/${profile.userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.LINE_ACCESS_TOKEN}`,
+          },
+        }
+      );
+
+      if (friendCheck.ok) {
+        isFriend = true; // ✅ เป็นเพื่อนแล้ว
+      } else if (friendCheck.status === 404) {
+        isFriend = false; // ❌ ยังไม่เป็นเพื่อน
+      }
+    } catch (err) {
+      console.warn("Friendship check failed:", err);
+    }
 
     // 4️⃣ อัปเดต / แทรกข้อมูลลูกค้า
     const [rows]: any = await promisePool.query(
@@ -191,9 +205,10 @@ export async function GET(req: Request) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    // 7️⃣ ถ้ายังไม่เป็นเพื่อน OA → ไปหน้าเว็บกลาง /add-line-friend
+    // 7️⃣ ถ้ายังไม่เป็นเพื่อน OA → ไปหน้า /add-line-friend
     if (!isFriend) {
-      return NextResponse.redirect(`${process.env.API_URL}/add-line-friend`);
+      const baseUrl = process.env.API_URL || "https://prakaidoaw-hair-nail-design.vercel.app";
+      return NextResponse.redirect(`${baseUrl}/add-line-friend`);
     }
 
     return res;
@@ -202,4 +217,5 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
 
