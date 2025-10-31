@@ -281,7 +281,7 @@ export default function BookingPage() {
       }
     } catch (err) {
       setSpin(false);
-      console.error("Error fetching times:", err);
+      //console.error("Error fetching times:", err);
     }
   };
 

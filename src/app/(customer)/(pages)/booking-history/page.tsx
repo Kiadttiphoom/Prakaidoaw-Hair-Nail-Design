@@ -15,7 +15,7 @@ export default async function BookingHistoryPage() {
   });
 
   if (!res.ok) {
-    console.error("Booking history fetch failed:", res.status);
+    //console.error("Booking history fetch failed:", res.status);
     return <div className="p-6">ไม่สามารถโหลดข้อมูลการจองได้</div>;
   }
 
