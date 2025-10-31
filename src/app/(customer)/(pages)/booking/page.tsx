@@ -20,6 +20,7 @@ export default function BookingPage() {
   const [timeSlots, setTimeSlots] = useState<any[]>([]);
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
   const [step, setStep] = useState(1);
+  const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
   const [formData, setFormData] = useState({
     stylist: "",
     service: "",
@@ -32,6 +33,19 @@ export default function BookingPage() {
     email: "",
     note: ""
   });
+
+  useEffect(() => {
+  function handleClickOutside(e: MouseEvent) {
+    if (showPrefixDropdown) {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.relative')) {
+        setShowPrefixDropdown(false);
+      }
+    }
+  }
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, [showPrefixDropdown]);
 
   useEffect(() => {
     setLoading(true);
@@ -125,7 +139,7 @@ export default function BookingPage() {
           credentials: "include"
         });
         const data = await res.json();
-        console.log(data);
+        //console.log(data);
         if (data.message === "success") {
           setStep(3);
         } else {
@@ -140,22 +154,32 @@ export default function BookingPage() {
           setPopupMessenger_color("warning");
           setPopupMessenger_text("กรุณากรอกคำนำหน้า");
           return;
-        }else if (formData.firstName === "") {
+        }
+        if (formData.firstName === "") {
           setPopupMessenger(true);
           setPopupMessenger_color("warning");
           setPopupMessenger_text("กรุณากรอกชื่อ");
           return;
-        } else if (formData.lastName === "") {
+        } 
+        if (formData.lastName === "") {
           setPopupMessenger(true);
           setPopupMessenger_color("warning");
           setPopupMessenger_text("กรุณากรอกนามสกุล");
           return;
-        } else if (formData.phone.trim() === "") {
+        } 
+        if (formData.phone.trim() === "") {
           setPopupMessenger(true);
           setPopupMessenger_color("warning");
           setPopupMessenger_text("กรุณากรอกเบอร์โทรศัพท์");
           return;
-        } else if (formData.phone.trim() !== "") {
+        } 
+        if (formData.phone.trim().length < 10) {
+            setPopupMessenger(true);
+            setPopupMessenger_color("warning");
+            setPopupMessenger_text("กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก");
+            return;   
+        } 
+        if (formData.phone.trim() !== "") {
           const isValidPhone = /^((\+66)|0)[0-9]{9}$/.test(formData.phone.trim());
 
           if (!isValidPhone) {
@@ -164,14 +188,10 @@ export default function BookingPage() {
             setPopupMessenger_text("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (เช่น 0812345678)");
             return;
           }
-        }else if (formData.email !== "") {
-          const isValidEmail = String(formData.email)
-            .toLowerCase()
-            .match(
-              /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            );
-
-          if (!isValidEmail) {
+        }
+        if (formData.email.trim() !== "") {
+          const rfc5322EmailRegex = /(?:[a-z0-9!#$%&'*+\x2f=?^_`\x7b-\x7d~\x2d]+(?:\.[a-z0-9!#$%&'*+\x2f=?^_`\x7b-\x7d~\x2d]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9\x2d]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\x2d]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9\x2d]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i;
+          if (!rfc5322EmailRegex.test(formData.email.trim())) {
             setPopupMessenger(true);
             setPopupMessenger_color("warning");
             setPopupMessenger_text("กรุณากรอกอีเมลให้ถูกต้อง");
@@ -192,6 +212,7 @@ export default function BookingPage() {
 
   const handleConfirm = async (confirm : boolean) => {
     if(confirm){
+      setDisabled(true);
         const res = await fetch(`/api/booking`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -222,6 +243,7 @@ export default function BookingPage() {
           }, 2000);
 
         } else {
+          setDisabled(false);
           setPopupMessenger_confirm(false);
           setPopupMessenger(true);
           setPopupMessenger_color("error");
@@ -497,11 +519,42 @@ export default function BookingPage() {
               <button
                 onClick={() => handleConfirm(true)}
                 className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white px-6 py-3.5 rounded-2xl text-sm font-semibold tracking-wide hover:from-gray-800 hover:to-gray-700 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
+                disabled={disabled}
               >
-                ยืนยันการจอง
+                {disabled ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0
+                            c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      กำลังยืนยันการจอง...
+                    </span>
+                  ) : (
+                    <>
+                      ยืนยันการจอง
+                    </>
+                  )}
               </button>
               <button
                 onClick={() => setPopupMessenger_confirm(false)}
+                disabled={disabled}
                 className="w-full bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-6 py-3.5 rounded-2xl text-sm font-semibold tracking-wide hover:from-gray-200 hover:to-gray-300 transition-all shadow-md hover:shadow-lg hover:scale-[1.02]"
               >
                 แก้ไขข้อมูล
@@ -787,22 +840,61 @@ export default function BookingPage() {
                         <User className="w-5 h-5" strokeWidth={1.5} />
                         คำนำหน้า
                       </label>
-                      <select
-                        value={formData.prefix || ''}
-                        onChange={(e) => setFormData({ ...formData, prefix: e.target.value })}
-                        className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors bg-white appearance-none"
-                        style={{
-                          backgroundImage: 'none'
-                        }}
-                      >
-                        <option value="">เลือกคำนำหน้า</option>
-                        <option value="นาย">นาย</option>
-                        <option value="นาง">นาง</option>
-                        <option value="นางสาว">นางสาว</option>
-                        <option value="เด็กชาย">เด็กชาย</option>
-                        <option value="เด็กหญิง">เด็กหญิง</option>
-                      </select>
+                      
+                      {/* Custom Select */}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
+                          className={`
+                            w-full px-5 py-4 rounded-2xl text-left border border-gray-200 
+                            focus:border-gray-900 focus:outline-none transition-all bg-white
+                            hover:border-gray-300 hover:bg-gray-50 hover:shadow-md
+                            font-light flex items-center justify-between cursor-pointer
+                          `}
+                        >
+                          <span className={formData.prefix ? "text-gray-900" : "text-gray-400"}>
+                            {formData.prefix || "เลือกคำนำหน้า"}
+                          </span>
+                          <svg 
+                            className={`w-5 h-5 text-gray-400 transition-transform ${showPrefixDropdown ? 'rotate-180' : ''}`}
+                            fill="none" 
+                            strokeWidth="2" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {showPrefixDropdown && (
+                          <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-200 rounded-2xl shadow-xl overflow-hidden">
+                            {["นาย", "นาง", "นางสาว", "เด็กชาย", "เด็กหญิง"].map((prefix) => (
+                              <button
+                                key={prefix}
+                                type="button"
+                                onClick={() => {
+                                  setFormData({ ...formData, prefix });
+                                  setShowPrefixDropdown(false);
+                                }}
+                                className={`
+                                  w-full px-5 py-3 text-left font-light transition-all cursor-pointer
+                                  ${
+                                    formData.prefix === prefix
+                                      ? "bg-gray-900 text-white"
+                                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                  }
+                                `}
+                              >
+                                {prefix}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
+
 
                     {/* ชื่อ */}
                     <div className="lg:col-span-4">
@@ -842,9 +934,14 @@ export default function BookingPage() {
                     </label>
                     <input
                       type="tel"
+                      inputMode="numeric"
+                      maxLength={10}
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="0xx-xxx-xxxx"
+                      onChange={(e) => {
+                        const onlyNums = e.target.value.replace(/[^0-9]/g, ""); // ❗ เอาเฉพาะตัวเลข
+                        setFormData({ ...formData, phone: onlyNums });
+                      }}
+                      placeholder="กรอกเบอร์โทรศัพท์ของคุณ"
                       className="w-full px-5 py-4 rounded-2xl text-gray-500 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
                     />
                   </div>

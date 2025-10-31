@@ -214,13 +214,14 @@ export async function POST(req: Request) {
       // 🔹 Insert ลงฐานข้อมูล (เริ่มต้น line_status = 'pending')
       await promisePool.query(
         `INSERT INTO booking 
-          (booking_code, user_id, customer_name, customer_phone, stylist_id, service_id, booking_date, booking_time, price, note, line_status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+          (booking_code, user_id, customer_name, customer_phone, customer_email, stylist_id, service_id, booking_date, booking_time, price, note, line_status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
         [
           booking_code,
           user_id,
           name,
           phone,
+          email,
           stylist,
           service,
           date,
@@ -229,6 +230,25 @@ export async function POST(req: Request) {
           note || null,
         ]
       );
+
+      const [customer] = await promisePool.query<any[]>(`
+        SELECT line_user_id
+        FROM customers
+        WHERE line_user_id = ?
+      `,[user_id]);
+
+      if(customer.length > 0){
+        await promisePool.query(
+          `update customers set phone = ?, email = ? WHERE  line_user_id = ?`,
+          [
+            phone,
+            email,
+            user_id
+          ]
+        );
+      }
+
+      
 
       const thaiMonths = [
         "มกราคม",

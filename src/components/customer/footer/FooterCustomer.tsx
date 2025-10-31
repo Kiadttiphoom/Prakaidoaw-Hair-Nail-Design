@@ -28,7 +28,7 @@ export default function FooterCustomer() {
           <div>
             <div className="flex items-start gap-3 mb-5">
               <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#fff] rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                <img src="/logo.png" alt="Logo Text" className="h-10 w-auto" />
+                <img src={system?.logo_url || "logo.png"} alt="Logo Text" className="h-10 w-auto" />
               </div>
               <div>
                 <span className="text-xl sm:text-2xl tracking-wider text-gray-900 font-light leading-tight block">

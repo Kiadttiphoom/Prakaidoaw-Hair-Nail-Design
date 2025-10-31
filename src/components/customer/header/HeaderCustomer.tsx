@@ -160,7 +160,7 @@ export default function HeaderCustomer() {
                           )}
 
                           <Link
-                            href="/booking"
+                            href="/booking-history"
                             className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                           >
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
@@ -251,7 +251,7 @@ export default function HeaderCustomer() {
                               <div className="my-3 mx-4 border-t border-gray-200/70"></div>
 
                               <Link
-                            href="/booking"
+                            href="/booking-history"
                             className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                           >
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
@@ -355,7 +355,7 @@ export default function HeaderCustomer() {
                               <span className="font-semibold text-sm">จองคิว</span>
                             </Link>
                             <Link
-                              href="/booking"
+                              href="/booking-history"
                               className="flex items-center w-full gap-4 px-4 py-3.5 text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 rounded-2xl transition-all duration-300 group mb-1 cursor-pointer"
                             >
                               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300 shadow-sm">
