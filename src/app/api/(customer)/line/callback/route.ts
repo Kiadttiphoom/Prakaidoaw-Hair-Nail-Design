@@ -193,7 +193,7 @@ export async function GET(req: Request) {
 
     // 7️⃣ ถ้ายังไม่เป็นเพื่อน OA → ไปหน้าเว็บกลาง /add-line-friend
     if (!isFriend) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/add-line-friend`);
+      return NextResponse.redirect(`${process.env.API_URL}/add-line-friend`);
     }
 
     return res;
