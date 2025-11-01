@@ -46,7 +46,7 @@ export default function BookingHistoryClient({ bookinghistory }: Props) {
     switch (status) {
       case "pending":
         return {
-          label: "รอดำเนินการ",
+          label: "รอยืนยัน",
           color: "text-yellow-700",
           bg: "bg-yellow-50",
           border: "border-yellow-200",

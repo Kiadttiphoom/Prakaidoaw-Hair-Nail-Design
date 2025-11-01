@@ -4,6 +4,7 @@ import { SystemProvider } from "@/context/SystemContext";
 import HeaderCustomer from "@/components/customer/header/HeaderCustomer";
 import FooterCustomer from "@/components/customer/footer/FooterCustomer";
 import jwt from "jsonwebtoken";
+import { PopupCustomerContextProvider } from "@/context/PopupCustomerContext";
 
 export default async function CustomerLayout({
   children,
@@ -50,11 +51,13 @@ export default async function CustomerLayout({
     // ✅ ส่ง systemData เป็น initialData
     <SystemProvider initialData={systemData}>
       <UserProvider initialUser={user}>
+        <PopupCustomerContextProvider>
         <div className="min-h-screen flex flex-col bg-white">
           <HeaderCustomer />
           <main className="flex-grow">{children}</main>
           <FooterCustomer />
         </div>
+        </PopupCustomerContextProvider>
       </UserProvider>
     </SystemProvider>
   );

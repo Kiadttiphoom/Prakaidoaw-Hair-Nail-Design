@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { mysqlPool } from "@/lib/db";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import { verifyUser } from "@/lib/verifyUser";
 
 export async function POST(req: Request) {
   const { step, payload } = await req.json();
   const promisePool = mysqlPool.promise();
+
+  const auth = await verifyUser();
+
+  if (!auth.authorized) {
+    return NextResponse.json({ message: auth.message }, { status: 401 });
+  }
 
   try {
     // ✅ STEP 1: payload คือ stylist_id โดยตรง
@@ -152,22 +157,7 @@ export async function POST(req: Request) {
       console.log(payload);
       const { stylist, service, date, time, prefix, firstName, lastName, phone, email, note } = payload;
 
-      const cookieStore = await cookies();
-      const token = cookieStore.get("line_user")?.value;
-
-      let user_id: string | null = null;
-      let pictureUrl: string | null = null;
       const name = prefix + firstName + " " + lastName;
-
-      if (token) {
-        try {
-          const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { user_id: string | number; pictureUrl: string };
-          user_id = decoded.user_id.toString();
-          pictureUrl = decoded.pictureUrl.toString();
-        } catch (err) {
-          console.error("Invalid JWT:", err);
-        }
-      }
 
       // 🔹 ดึงราคาจาก service_id
       const [services] = await promisePool.query<any[]>(
@@ -218,7 +208,7 @@ export async function POST(req: Request) {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
         [
           booking_code,
-          user_id,
+          auth.user?.user_id,
           name,
           phone,
           email,
@@ -235,7 +225,7 @@ export async function POST(req: Request) {
         SELECT line_user_id
         FROM customers
         WHERE line_user_id = ?
-      `,[user_id]);
+      `,[auth.user?.user_id]);
 
       if(customer.length > 0){
         await promisePool.query(
@@ -243,7 +233,7 @@ export async function POST(req: Request) {
           [
             phone,
             email,
-            user_id
+            auth.user?.user_id
           ]
         );
       }
@@ -411,7 +401,7 @@ export async function POST(req: Request) {
                 },
                 {
                   type: "image",
-                  url: pictureUrl,
+                  url: auth.user?.pictureUrl,
                   size: "md",
                   aspectRatio: "1:1",
                   align: "end",
@@ -452,7 +442,7 @@ export async function POST(req: Request) {
             Authorization: `Bearer ${process.env.LINE_CHANNEL_TOKEN}`,
           },
           body: JSON.stringify({
-            to: user_id,
+            to: auth.user?.user_id,
             messages: [flexMessage],
           }),
         });

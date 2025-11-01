@@ -4,17 +4,16 @@ import { Calendar, Clock, User, Phone, Mail, ChevronRight, Check, X, ShieldAlert
 import BookingSkeleton from "@/components/UI/customer/Skeleton/BookingSkeleton";
 import CustomDatePicker from "@/components/UI/customer/DatePicker/CustomDatePicker";
 import { useSystem } from "@/context/SystemContext";
+import { usePopupMessenger } from "@/context/PopupCustomerContext";
 
 export default function BookingPage() {
+  const { showPopup, closePopup } = usePopupMessenger();
   const { system } = useSystem();
   const [loading, setLoading] = useState(true);
   const [spin, setSpin] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [popupAuth, setPopupAuth] = useState(false);
-  const [popupMessenger, setPopupMessenger] = useState(false);
   const [popupMessenger_confirm, setPopupMessenger_confirm] = useState(false);
-  const [popupMessenger_color, setPopupMessenger_color] = useState("");
-  const [popupMessenger_text, setPopupMessenger_text] = useState("");
   const [services, setServices] = useState<any[]>([]);
   const [stylists, setstylists] = useState<any[]>([]);
   const [timeSlots, setTimeSlots] = useState<any[]>([]);
@@ -122,6 +121,15 @@ export default function BookingPage() {
           body: JSON.stringify({ step: step, payload: formData.stylist }),
           credentials: "include"
         });
+        if(res.status === 401){
+          showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+          setDisabled(false);
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1000);
+          return;
+        }
+
         const data = await res.json();
         if (data.message === "success") {
           setServices(data.data.services);
@@ -138,6 +146,14 @@ export default function BookingPage() {
           body: JSON.stringify({ step: step, payload: { stylist: formData.stylist, service: formData.service } }),
           credentials: "include"
         });
+        if(res.status === 401){
+          showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+          setDisabled(false);
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1000);
+          return;
+        }
         const data = await res.json();
         //console.log(data);
         if (data.message === "success") {
@@ -150,51 +166,37 @@ export default function BookingPage() {
         setStep(4);
       } else if (step === 4) {
         if (formData.prefix === "") {
-          setPopupMessenger(true);
-          setPopupMessenger_color("warning");
-          setPopupMessenger_text("กรุณากรอกคำนำหน้า");
+          showPopup("warning", "กรุณากรอกคำนำหน้า");
           return;
         }
         if (formData.firstName === "") {
-          setPopupMessenger(true);
-          setPopupMessenger_color("warning");
-          setPopupMessenger_text("กรุณากรอกชื่อ");
+          showPopup("warning", "กรุณากรอกชื่อ");
           return;
         } 
         if (formData.lastName === "") {
-          setPopupMessenger(true);
-          setPopupMessenger_color("warning");
-          setPopupMessenger_text("กรุณากรอกนามสกุล");
+          showPopup("warning", "กรุณากรอกนามสกุล");
           return;
         } 
         if (formData.phone.trim() === "") {
-          setPopupMessenger(true);
-          setPopupMessenger_color("warning");
-          setPopupMessenger_text("กรุณากรอกเบอร์โทรศัพท์");
+          showPopup("warning", "กรุณากรอกเบอร์โทรศัพท์");
           return;
         } 
         if (formData.phone.trim().length < 10) {
-            setPopupMessenger(true);
-            setPopupMessenger_color("warning");
-            setPopupMessenger_text("กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก");
+            showPopup("warning", "กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก");
             return;   
         } 
         if (formData.phone.trim() !== "") {
           const isValidPhone = /^((\+66)|0)[0-9]{9}$/.test(formData.phone.trim());
 
           if (!isValidPhone) {
-            setPopupMessenger(true);
-            setPopupMessenger_color("warning");
-            setPopupMessenger_text("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (เช่น 0812345678)");
+            showPopup("warning", "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (เช่น 0812345678)");
             return;
           }
         }
         if (formData.email.trim() !== "") {
           const rfc5322EmailRegex = /(?:[a-z0-9!#$%&'*+\x2f=?^_`\x7b-\x7d~\x2d]+(?:\.[a-z0-9!#$%&'*+\x2f=?^_`\x7b-\x7d~\x2d]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9\x2d]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\x2d]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9\x2d]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i;
           if (!rfc5322EmailRegex.test(formData.email.trim())) {
-            setPopupMessenger(true);
-            setPopupMessenger_color("warning");
-            setPopupMessenger_text("กรุณากรอกอีเมลให้ถูกต้อง");
+            showPopup("warning", "กรุณากรอกอีเมลให้ถูกต้อง");
             return;
           }
         }
@@ -219,13 +221,19 @@ export default function BookingPage() {
           credentials: "include",
           body: JSON.stringify({ step: step, payload: formData }),
         });
+        if(res.status === 401){
+          showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง"); 
+          setDisabled(false);
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1000);
+          return;
+        }
         const result = await res.json();
 
         if (result.message === "success") {
           setPopupMessenger_confirm(false);
-          setPopupMessenger(true);
-          setPopupMessenger_color("success");
-          setPopupMessenger_text("จองคิวสำเร็จ!");
+          showPopup("success", "จองคิวสำเร็จ");
           setFormData((prev) => ({
             ...prev,
             stylist: "",
@@ -245,9 +253,7 @@ export default function BookingPage() {
         } else {
           setDisabled(false);
           setPopupMessenger_confirm(false);
-          setPopupMessenger(true);
-          setPopupMessenger_color("error");
-          setPopupMessenger_text("เกิดข้อผิดพลาด โปรดลองอีกครั้ง");
+          showPopup("error", "เกิดข้อผิดพลาด โปรดลองอีกครั้ง");
         }
     }
   }
@@ -273,6 +279,14 @@ export default function BookingPage() {
           },
         }),
       });
+      if(res.status === 401){
+          showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+          setDisabled(false);
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1000);
+          return;
+        }
       const data = await res.json();
       if (data.message === "success") {
         setSpin(false);
@@ -353,61 +367,6 @@ export default function BookingPage() {
                 className="w-full bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-6 py-3.5 rounded-2xl text-sm font-semibold tracking-wide hover:from-gray-200 hover:to-gray-300 transition-all shadow-md hover:shadow-lg hover:scale-[1.02]"
               >
                 ยกเลิก
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {popupMessenger && (
-        <div className="fixed inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/50 backdrop-blur-md flex items-center justify-center z-[999] overflow-hidden">
-          <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-3xl shadow-2xl px-8 py-10 w-[90%] max-w-md text-center animate-fade-in-up relative border border-gray-200/50">
-            {/* Decorative elements */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-gray-900 to-gray-700 rounded-full opacity-10 blur-2xl"></div>
-
-            {/* Icon */}
-            <div
-              className={`w-16 h-16 mx-auto mb-5 rounded-2xl flex items-center justify-center shadow-lg ${popupMessenger_color === "error"
-                ? "bg-gradient-to-br from-red-900 to-red-800"
-                : popupMessenger_color === "success"
-                  ? "bg-gradient-to-br from-green-900 to-green-800"
-                  : "bg-gradient-to-br from-yellow-900 to-yellow-800"
-                }`}
-            >
-              {popupMessenger_color === "error" ?
-                (
-                  <X className="w-8 h-8 text-white" />
-                ) : popupMessenger_color === "success" ? (
-                  <Check className="w-8 h-8 text-white" />
-                ) : (
-                  <ShieldAlert className="w-8 h-8 text-white" />
-                )
-              }
-
-            </div>
-
-            <h3 className="text-gray-900 text-2xl font-bold mb-3 tracking-tight">
-
-              {popupMessenger_color === "error" ?
-                (
-                  "เกิดข้อผิดพลาด"
-                ) : popupMessenger_color === "success" ? (
-                  "สำเร็จ"
-                ) : (
-                  "คำเตือน"
-                )
-              }
-            </h3>
-            <p className="text-gray-600 text-sm mb-8 leading-relaxed px-2">
-              {popupMessenger_text}
-            </p>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => { setPopupMessenger(false), setPopupMessenger_color(""), setPopupMessenger_text("") }}
-                className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white px-6 py-3.5 rounded-2xl text-sm font-semibold tracking-wide hover:from-gray-800 hover:to-gray-700 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
-              >
-                ตกลง
               </button>
             </div>
           </div>
@@ -870,7 +829,7 @@ export default function BookingPage() {
                         {/* Dropdown Menu */}
                         {showPrefixDropdown && (
                           <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-200 rounded-2xl shadow-xl overflow-hidden">
-                            {["นาย", "นาง", "นางสาว", "เด็กชาย", "เด็กหญิง"].map((prefix) => (
+                            {["นาย", "นาง", "นางสาว", "เด็กชาย", "เด็กหญิง","Mr.", "Mrs.", "Ms.", "Master", "Miss"].map((prefix) => (
                               <button
                                 key={prefix}
                                 type="button"

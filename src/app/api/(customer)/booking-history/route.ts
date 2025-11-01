@@ -1,25 +1,14 @@
 import { NextResponse } from "next/server";
 import { mysqlPool } from "@/lib/db";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import { verifyUser } from "@/lib/verifyUser";
 
 export async function POST() {
   const promisePool = mysqlPool.promise();
 
-  const cookieStore = await cookies();
-  const userCookie = cookieStore.get("line_user");
+  const auth = await verifyUser();
 
-  if (!userCookie) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  let user: { line_user_id: string } | null = null;
-
-  try {
-    const decoded = jwt.verify(userCookie.value, process.env.JWT_SECRET!);
-    user = decoded as { line_user_id: string };
-  } catch (err) {
-    return NextResponse.json({ message: "Invalid token" }, { status: 401 });
+  if (!auth.authorized) {
+    return NextResponse.json({ message: auth.message }, { status: 401 });
   }
 
   // ✅ ใช้ JOIN ดึงข้อมูลที่เกี่ยวข้องทั้งหมดในครั้งเดียว
@@ -43,7 +32,7 @@ export async function POST() {
     WHERE b.user_id = ?
     ORDER BY b.created_at DESC
     `,
-    [user.line_user_id]
+    [auth.user?.line_user_id]
   );
 
   // ✅ จัดรูปแบบข้อมูลให้อ่านง่าย

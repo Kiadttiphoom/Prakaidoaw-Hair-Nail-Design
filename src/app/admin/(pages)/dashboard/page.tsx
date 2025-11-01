@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useEffect,useState} from "react";
 import {
   Calendar,
   Users,
@@ -10,9 +10,18 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
+  ArrowRight
 } from "lucide-react";
+import { usePopupMessenger } from "@/context/PopupBackofficeContext";
 
 export default function DashboardPage() {
+  const [recentBookings,setRecentBookings] = useState([]);
+  const { showPopup, closePopup } = usePopupMessenger();
+
+  const handleError = () => {
+    showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+  };
+
   const stats = [
     {
       label: "รอยืนยัน",
@@ -89,46 +98,79 @@ export default function DashboardPage() {
     },
   ];
 
-  const recentBookings = [
-    {
-      time: "09:00",
-      customer: "คุณสมหญิง",
-      service: "ตัดผม + สระ",
-      stylist: "พี่มิ้น",
-      status: "confirmed",
-    },
-    {
-      time: "10:30",
-      customer: "คุณนภา",
-      service: "ดัดผม",
-      stylist: "พี่เจน",
-      status: "pending",
-    },
-    {
-      time: "13:00",
-      customer: "คุณอารยา",
-      service: "ย้อมสี",
-      stylist: "พี่มิ้น",
-      status: "confirmed",
-    },
-    {
-      time: "14:30",
-      customer: "คุณวิภา",
-      service: "ทรีทเมนท์",
-      stylist: "พี่นุ่น",
-      status: "confirmed",
-    },
-    {
-      time: "16:00",
-      customer: "คุณสุดา",
-      service: "ตัดผม",
-      stylist: "พี่เบล",
-      status: "pending",
-    },
-  ];
+  // const recentBookings = [
+  //   {
+  //     time: "09:00",
+  //     customer: "คุณสมหญิง",
+  //     service: "ตัดผม + สระ",
+  //     stylist: "พี่มิ้น",
+  //     status: "confirmed",
+  //   },
+  //   {
+  //     time: "10:30",
+  //     customer: "คุณนภา",
+  //     service: "ดัดผม",
+  //     stylist: "พี่เจน",
+  //     status: "pending",
+  //   },
+  //   {
+  //     time: "13:00",
+  //     customer: "คุณอารยา",
+  //     service: "ย้อมสี",
+  //     stylist: "พี่มิ้น",
+  //     status: "confirmed",
+  //   },
+  //   {
+  //     time: "14:30",
+  //     customer: "คุณวิภา",
+  //     service: "ทรีทเมนท์",
+  //     stylist: "พี่นุ่น",
+  //     status: "confirmed",
+  //   },
+  //   {
+  //     time: "16:00",
+  //     customer: "คุณสุดา",
+  //     service: "ตัดผม",
+  //     stylist: "พี่เบล",
+  //     status: "pending",
+  //   },
+  // ];
+
+  
+useEffect(() => {
+  const fetchBookings = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.API_URL || "http://localhost:3000"}/api/admin/booking`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials:"include"
+        }
+      );
+
+      if(res.status === 401){
+          // setPopupMessenger(true);
+          // setPopupMessenger_color("error");
+          // setPopupMessenger_text("กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+          setTimeout(() => {
+            window.location.href = `${process.env.API_URL || "http://localhost:3000"}/admin/login`;
+          }, 1000);
+          return;
+        }
+
+      const data = await res.json();
+      console.log("Booking data:", data);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+    }
+  };
+
+  fetchBookings();
+}, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 rounded-xl">
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-2">
@@ -213,25 +255,31 @@ export default function DashboardPage() {
               </a>
             );
           })}
+          <button
+      onClick={handleError}
+      className="bg-red-500 text-white px-4 py-2 rounded-lg"
+    >
+      ทดสอบ Popup
+    </button>
         </div>
       </section>
 
       {/* Recent Bookings */}
       <section className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 w-[100%]">
           <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
             <Calendar className="w-5 h-5 text-rose-400" />
             การจองวันนี้
           </h2>
           <a
             href="/admin/bookings"
-            className="text-sm text-rose-500 hover:text-rose-600 font-medium"
+            className="inline-flex items-center gap-1 text-sm text-rose-500 hover:text-rose-600 font-medium"
           >
-            ดูทั้งหมด →
+            ดูทั้งหมด <ArrowRight className="w-3 h-3"/>
           </a>
         </div>
 
-        <div className="space-y-3">
+        {/* <div className="space-y-3">
           {recentBookings.map((booking, index) => (
             <div
               key={index}
@@ -265,7 +313,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
       </section>
     </div>
   );

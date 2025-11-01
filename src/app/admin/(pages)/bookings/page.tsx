@@ -189,7 +189,7 @@ export default function BookingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 rounded-xl">
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center justify-between">

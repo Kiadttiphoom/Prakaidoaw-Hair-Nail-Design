@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import {
@@ -11,6 +12,26 @@ import {
 } from "lucide-react";
 
 export default function SidebarAdmin() {
+
+  async function handleLogout(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/admin/auth", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        window.location.href = "/admin/login";
+      } else {
+        console.error("Logout failed:", await res.text());
+      }
+    } catch (err) {
+      console.error("Network error during logout:", err);
+    }
+  }
+
   const menuItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/bookings", label: "จัดการรายการจอง", icon: Calendar },
@@ -48,14 +69,14 @@ export default function SidebarAdmin() {
         })}
 
         {/* Logout Button */}
-        <div className="pt-4 mt-4 border-t border-slate-200">
-          <Link
-            href="/admin/logout"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
+        <div className="pt-4 mt-4 border-t border-slate-200 flex flex-col space-y-1">
+          <button
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700 hover:bg-white hover:shadow-sm hover:text-rose-500 transition-all duration-200 group"
+            onClick={handleLogout}
           >
-            <LogOut className="w-5 h-5 text-slate-400 group-hover:text-red-500 transition-colors" />
+            <LogOut className="w-5 h-5 text-slate-400 group-hover:text-rose-400 transition-colors" />
             <span className="text-sm font-medium">ออกจากระบบ</span>
-          </Link>
+          </button>
         </div>
       </nav>
     </aside>
