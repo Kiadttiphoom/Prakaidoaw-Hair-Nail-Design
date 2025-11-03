@@ -47,40 +47,40 @@ export default function BookingHistoryClient({ bookinghistory }: Props) {
       case "pending":
         return {
           label: "รอยืนยัน",
-          color: "text-yellow-700",
-          bg: "bg-yellow-50",
+          color: "text-yellow-800",
+          bg: "bg-yellow-100",
           border: "border-yellow-200",
           icon: AlertCircle
         };
       case "confirmed":
         return {
           label: "ยืนยันแล้ว",
-          color: "text-green-700",
-          bg: "bg-green-50",
+          color: "text-green-800",
+          bg: "bg-green-100",
           border: "border-green-200",
           icon: CheckCircle
         };
       case "completed":
         return {
           label: "เสร็จสิ้น",
-          color: "text-blue-700",
-          bg: "bg-blue-50",
+          color: "text-blue-800",
+          bg: "bg-blue-100",
           border: "border-blue-200",
           icon: CheckCircle
         };
       case "cancelled":
         return {
           label: "ยกเลิก",
-          color: "text-red-700",
-          bg: "bg-red-50",
+          color: "text-red-800",
+          bg: "bg-red-100",
           border: "border-red-200",
           icon: XCircle
         };
       default:
         return {
           label: "ไม่ทราบสถานะ",
-          color: "text-gray-700",
-          bg: "bg-gray-50",
+          color: "text-gray-800",
+          bg: "bg-gray-100",
           border: "border-gray-200",
           icon: AlertCircle
         };
@@ -141,7 +141,7 @@ export default function BookingHistoryClient({ bookinghistory }: Props) {
         {/* Header with Status */}
         <div className="flex items-start justify-between mb-3 lg:mb-4 pb-3 lg:pb-4 border-b border-gray-200/60">
           <div className="flex-1 min-w-0">
-            <p className="text-[9px] lg:text-[10px] text-gray-400 tracking-wider uppercase mt-7 sm:mt-0">
+            <p className="text-[9px] lg:text-[10px] text-gray-600 tracking-wider uppercase mt-7 sm:mt-0">
               รหัสการจอง
             </p>
             <p className="text-xs lg:text-sm text-gray-900 font-light tracking-wide">

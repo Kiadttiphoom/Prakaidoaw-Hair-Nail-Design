@@ -1,4 +1,6 @@
-// app/booking/page.tsx
+export const dynamic = "force-dynamic";
+
+
 import BookingClient from "./BookingClient";
 import { cookies } from "next/headers";
 

@@ -1,4 +1,6 @@
-import BookingHistoryClient from "./ฺbooking-historyClient";
+export const dynamic = "force-dynamic";
+
+import BookingHistoryClient from "./booking-historyClient";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation"; // ✅ ใช้ redirect ของ Next.js แทน window.location
 
@@ -19,7 +21,7 @@ export default async function BookingHistoryPage() {
         "Content-Type": "application/json",
         Cookie: cookieHeader,
       },
-      cache: "no-store",
+      next: { revalidate: 60 },
     }
   );
 
