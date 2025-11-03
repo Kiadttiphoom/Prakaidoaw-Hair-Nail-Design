@@ -24,6 +24,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "critters": "^0.0.23",
+    "lightningcss": "^1.30.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
