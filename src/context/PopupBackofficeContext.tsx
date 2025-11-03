@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useMemo } from "react";
 
 interface PopupContextType {
   showPopup: (type: "error" | "success" | "warning", text: string) => void;
@@ -17,13 +17,20 @@ export function PopupBackofficeContextProvider({ children }: { children: ReactNo
     setPopupMessenger(true);
     setPopupMessenger_color(type);
     setPopupMessenger_text(text);
+
+    setTimeout(() => {
+      setPopupMessenger(false);
+      setPopupMessenger_text("");
+    }, 2500);
   };
 
-  const closePopup = () => { // ✅ ฟังก์ชันปิด popup ด้วยโค้ด
+  const closePopup = () => {
     setPopupMessenger(false);
     setPopupMessenger_color("error");
     setPopupMessenger_text("");
   };
+
+  const value = useMemo(() => ({ showPopup, closePopup }), []);
 
   return (
     <PopupBackofficeContext.Provider value={{ showPopup,closePopup  }}>
@@ -60,7 +67,7 @@ export function PopupBackofficeContextProvider({ children }: { children: ReactNo
             <p className="text-gray-600 text-sm mb-8">{popupMessenger_text}</p>
 
             <button
-              onClick={() => setPopupMessenger(false)}
+              onClick={closePopup}
               className="w-full bg-gray-900 text-white px-6 py-3.5 rounded-2xl font-semibold hover:bg-gray-800 transition-all shadow-md"
             >
               ตกลง
@@ -74,6 +81,6 @@ export function PopupBackofficeContextProvider({ children }: { children: ReactNo
 
 export function usePopupMessenger() {
   const context = useContext(PopupBackofficeContext);
-  if (!context) throw new Error("usePopupMessenger must be used within PopupMessengerProvider");
+  if (!context) throw new Error("usePopupMessenger must be used within PopupBackofficeContextProvider");
   return context;
 }

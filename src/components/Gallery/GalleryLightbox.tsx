@@ -2,6 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
+import Image from "next/image";
+import { X } from "lucide-react";
 
 export default function GalleryLightbox({ selectedImage, onClose }: any) {
   // ✅ ล็อก scroll ของ body เมื่อเปิด Lightbox
@@ -39,7 +41,7 @@ export default function GalleryLightbox({ selectedImage, onClose }: any) {
             "fixed inset-0 flex items-center justify-center z-[999] bg-black/80 backdrop-blur-sm overscroll-none touch-none select-none",
           style: {
             WebkitBackdropFilter: "blur(8px)",
-            transform: "translateZ(0)", // ✅ ป้องกันภาพลอยใน iOS Chrome
+            transform: "translateZ(0)",
             willChange: "transform",
           },
           initial: { opacity: 0 },
@@ -62,14 +64,20 @@ export default function GalleryLightbox({ selectedImage, onClose }: any) {
             onClick: (e: any) => e.stopPropagation(),
           } as any)}
         >
-          {/* container ของภาพ */}
+          {/* ✅ แก้: ใช้ Image ของ Next.js แทน img */}
           <div className="relative inline-block">
-            <img
+            <Image
               src={selectedImage}
               alt="Gallery preview"
+              width={1200}
+              height={900}
+              quality={80}
+              loading="eager" // โหลดเร็วขึ้น เพราะแสดงทันที
+              priority
               className="max-h-[75vh] sm:max-h-[85vh] max-w-[90vw] w-auto h-auto rounded-xl shadow-xl object-contain select-none"
+              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 85vw, 80vw"
               style={{
-                transform: "translateZ(0)", // ✅ บังคับ GPU render
+                transform: "translateZ(0)",
               }}
             />
 
@@ -78,19 +86,7 @@ export default function GalleryLightbox({ selectedImage, onClose }: any) {
               onClick={onClose}
               className="absolute -top-3 -right-3 bg-white/95 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all hover:scale-110 hover:shadow-gray-900/20"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <X className="w-5 h-5"/>
             </button>
           </div>
         </motion.div>

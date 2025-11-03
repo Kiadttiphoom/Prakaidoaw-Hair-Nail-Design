@@ -4,54 +4,67 @@ import { verifyBackoffice } from "@/lib/verifyBackoffice";
 
 export async function GET(request: Request) {
   try {
-    const auth = await verifyBackoffice();
+    const promisePool = mysqlPool.promise();
 
-    if (!auth.authorized) {
-      return NextResponse.json({ message: auth.message }, { status: 401 });
-    }
+    // 🔹 ดึงข้อมูลทั้งหมด
+    const [rows] = await promisePool.query<any[]>(`
+      SELECT 
+        b.booking_code,
+        b.customer_name,
+        b.customer_phone,
+        s.title AS service_title,
+        st.name AS stylist_name,
+        b.booking_date,
+        b.booking_time,
+        b.price,
+        b.status,
+        b.note,
+        b.created_at
+      FROM booking b
+      LEFT JOIN services s ON b.service_id = s.id
+      LEFT JOIN stylists st ON b.stylist_id = st.id
+      ORDER BY b.created_at DESC
+    `);
 
-    try {
-      const response = NextResponse.json({ message: "Login success" }, { status: 200 });
+    // 🔹 จัดรูปแบบข้อมูล
+    const formatted = rows.map((item) => ({
+      booking_code: item.booking_code,
+      customer_name: item.customer_name,
+      customer_phone: item.customer_phone,
+      service_title: item.service_title,
+      stylist_name: item.stylist_name,
+      date: new Date(item.booking_date).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      time: item.booking_time?.slice(0, 5),
+      price: Number(item.price || 0).toLocaleString("th-TH"),
+      status: item.status,
+      note: item.note || "-",
+      payment_status: item.payment_status,
+    }));
 
-      return response;
-    } catch (err) {
-      console.error("Decrypt error:", err);
-      return NextResponse.json(
-        { message: "เกิดข้อผิดพลาดในการถอดรหัส" },
-        { status: 500 }
-      );
-    }
+    // 🔹 นับยอดรวมตามสถานะ
+    const summary = {
+      pending: rows.filter((r) => r.status === "pending").length,
+      confirmed: rows.filter((r) => r.status === "confirmed").length,
+      completed: rows.filter((r) => r.status === "completed").length,
+      canceled: rows.filter((r) => r.status === "canceled").length,
+      total: rows.length,
+    };
 
-
-  } catch (err) {
-    console.error("Login error:", err);
     return NextResponse.json(
-      { message: "เกิดข้อผิดพลาดในระบบ" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE() {
-  try {
-    // ✅ สร้าง response พร้อมสั่งลบ cookie token
-    const response = NextResponse.json(
-      { message: "Logout success" },
+      {
+        summary,
+        data: formatted,
+      },
       { status: 200 }
     );
-
-    response.cookies.set({
-      name: "token",
-      value: "",
-      expires: new Date(0),
-      path: "/", // ให้หมดอายุทั่วทั้งโดเมน
-    });
-
-    return response;
-  } catch (error) {
-    console.error("Logout error:", error);
+  } catch (err) {
+    console.error("Dashboard error:", err);
     return NextResponse.json(
-      { message: "Logout failed" },
+      { message: "เกิดข้อผิดพลาดในระบบ" },
       { status: 500 }
     );
   }

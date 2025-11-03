@@ -1,5 +1,5 @@
 "use client";
-import { Scissors, Instagram, Facebook, Phone, Mail, MapPin } from "lucide-react";
+import { Scissors, Instagram, Facebook, Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSystem } from "@/context/SystemContext";
 export default function FooterCustomer() {
@@ -28,11 +28,11 @@ export default function FooterCustomer() {
           <div>
             <div className="flex items-start gap-3 mb-5">
               <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#fff] rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                <img src={system?.logo_url || "logo.png"} alt="Logo Text" className="h-10 w-auto" />
+                <img src={system?.logo_url || "logo.png"} alt="โลโก้ร้าน Prakaidoaw Hair & Nail Design" className="h-10 w-auto" />
               </div>
               <div>
                 <span className="text-xl sm:text-2xl tracking-wider text-gray-900 font-light leading-tight block">
-                  {system?.shop_name  || "Prakaidoaw"}
+                  {system?.shop_name || "Prakaidoaw"}
                 </span>
               </div>
             </div>
@@ -44,30 +44,30 @@ export default function FooterCustomer() {
 
           {/* เวลาเปิด */}
           <div>
-            <h4 className="text-gray-900 mb-5 sm:mb-6 font-medium tracking-wide text-base sm:text-lg">
+            <h2 className="text-gray-900 mb-5 sm:mb-6 font-medium tracking-wide text-base sm:text-lg">
               เวลาเปิดทำการ
-            </h4>
+            </h2>
             <div className="space-y-3">
               <div>
                 <span className="block text-gray-500 text-sm mb-1.5">
                   {system?.open_days
                     ? (() => {
-                        const mapTH: Record<string, string> = {
-                          mon: "จันทร์",
-                          tue: "อังคาร",
-                          wed: "พุธ",
-                          thu: "พฤหัสบดี",
-                          fri: "ศุกร์",
-                          sat: "เสาร์",
-                          sun: "อาทิตย์",
-                        };
+                      const mapTH: Record<string, string> = {
+                        mon: "จันทร์",
+                        tue: "อังคาร",
+                        wed: "พุธ",
+                        thu: "พฤหัสบดี",
+                        fri: "ศุกร์",
+                        sat: "เสาร์",
+                        sun: "อาทิตย์",
+                      };
 
-                        const days = system.open_days
-                          .split(",")
-                          .map((day) => mapTH[day.trim().toLowerCase()] || day);
+                      const days = system.open_days
+                        .split(",")
+                        .map((day) => mapTH[day.trim().toLowerCase()] || day);
 
-                        return days.length === 7 ? "จันทร์ - อาทิตย์" : days.join(" - ");
-                      })()
+                      return days.length === 7 ? "จันทร์ - อาทิตย์" : days.join(" - ");
+                    })()
                     : "จันทร์ - อาทิตย์"}
                 </span>
                 <span className="text-gray-900 text-lg sm:text-xl font-light">
@@ -79,21 +79,28 @@ export default function FooterCustomer() {
 
           {/* ติดต่อ */}
           <div>
-            <h4 className="text-gray-900 mb-5 sm:mb-6 font-medium tracking-wide text-base sm:text-lg">
+            <h2 className="text-gray-900 mb-5 sm:mb-6 font-medium tracking-wide text-base sm:text-lg">
               ติดต่อเรา
-            </h4>
+            </h2>
             <div className="space-y-4">
               {[
-                { icon: Phone, text: system?.phone, href: `tel:${system?.phone?.replace(/\s+/g, "")}` },
+                {
+                  icon: Phone,
+                  text: system?.phone,
+                  href: `tel:${system?.phone?.replace(/\s+/g, "")}`,
+                  label: `โทร ${system?.phone || ""}`,
+                },
                 {
                   icon: Mail,
                   text: system?.email,
                   href: emailLink,
+                  label: `ส่งอีเมลถึง ${system?.email || ""}`,
                 },
                 {
                   icon: MapPin,
                   text: system?.address,
                   href: system?.maps,
+                  label: `เปิดแผนที่ไปยัง ${system?.address || ""}`,
                 },
               ].map((item, i) => (
                 <a
@@ -101,6 +108,7 @@ export default function FooterCustomer() {
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={item.label}
                   className="flex items-start gap-3 text-gray-600 text-sm hover:text-gray-900 font-light group transition-colors"
                 >
                   <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-gray-200 group-hover:border-gray-400 transition-colors flex-shrink-0 mt-0.5">
@@ -122,17 +130,21 @@ export default function FooterCustomer() {
                 {
                   icon: Instagram,
                   url: system?.instagram,
+                  label: "Instagram",
                 },
                 {
                   icon: Facebook,
                   url: system?.facebook,
+                  label: "Facebook",
                 },
-              ].map(({ icon: Icon, url }, i) => (
+              ].map(({ icon: Icon, url, label }, i) => (
                 <a
                   key={i}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={`เปิดหน้า ${label}`}
+                  title={`เปิดหน้า ${label}`}
                   className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-gray-600 border border-gray-200 hover:text-pink-500 hover:border-pink-300 transition-all"
                 >
                   <Icon className="w-5 h-5" strokeWidth={1.5} />
@@ -145,26 +157,21 @@ export default function FooterCustomer() {
             <div className="flex gap-2">
               <input
                 type="email"
+                aria-label="อีเมลของคุณ"
                 autoComplete="off"
                 placeholder="อีเมลของคุณ"
-                className="flex-1 px-4 py-3 rounded-full bg-white border border-gray-200 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                className="flex-1 px-4 py-3 rounded-full bg-white border border-gray-300 text-sm text-gray-700 placeholder-gray-500 focus:outline-none focus:border-gray-500 transition-colors"
               />
-              <button className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                  />
-                </svg>
+              <button
+                aria-label="รับข่าวสารและโปรโมชั่น"
+                title="รับข่าวสารและโปรโมชั่น"
+                className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0"
+              >
+                <ArrowRight className="w-5 h-5" />
               </button>
             </div>
+
+
           </div>
         </div>
 

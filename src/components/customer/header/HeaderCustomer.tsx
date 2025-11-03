@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, LogOut, User, Scissors, UsersRound, FileImage, TicketPercent,ClipboardClock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/context/UserContext";
@@ -61,9 +62,13 @@ export default function HeaderCustomer() {
         {/* โลโก้ */}
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition cursor-pointer">
-            <img
-              src={system?.logo_url || "/logo.png"}
-              alt="Logo Text"
+            <Image
+              src="/android-chrome-192x192.png"
+              alt="โลโก้ร้าน Prakaidoaw Hair & Nail Design"
+              width={48}
+              height={48}
+              priority
+              quality={70}
               className="h-10 w-auto"
             />
             <span className="text-sm sm:text-xl tracking-widest text-gray-800 font-light">

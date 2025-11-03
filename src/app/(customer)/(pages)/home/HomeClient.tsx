@@ -7,9 +7,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Search
 } from "lucide-react";
-import GalleryLightbox from "@/components/Gallery/GalleryLightbox";
+import dynamic from 'next/dynamic';
+import Image from "next/image";
+
+const GalleryLightbox = dynamic(() => import("@/components/Gallery/GalleryLightbox"), {
+  ssr: false,
+});
 
 type Props = {
   services: any[];
@@ -53,26 +59,18 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
     "https://images.unsplash.com/photo-1595475884562-073c30d45670?w=600&q=80",
   ];
 
-//   useEffect(() => {
-//     if (window.location.hash) {
-//       window.history.replaceState(null, "", window.location.pathname);
-//       window.scrollTo(0, 0);
-//     }
-//   }, []);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
 
   useEffect(() => {
-    if (services.length === 0 && stylists.length === 0 && reviews.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }));
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }));
+        }
+      });
+    }, { threshold: 0.15 });
 
     document.querySelectorAll('[id^="anim-"]').forEach((el) => {
       observer.observe(el);
@@ -87,7 +85,18 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
     }));
 
     return () => observer.disconnect();
-  }, [services, stylists, reviews]);
+  }, []); // ✅ ไม่มี dependencies
+
+
+
+  useEffect(() => {
+    // preload ภาพทั้งหมดล่วงหน้า
+    gallery.forEach((src: string) => {
+      const img = new window.Image();
+      img.src = src;
+    });
+  }, [gallery]);
+
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
@@ -100,15 +109,18 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
         {heroSlides.map((slide, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-all duration-[2500ms] ease-out ${
-              index === currentSlide ? "opacity-100 scale-100" : "opacity-0 scale-105"
-            }`}
+            className={`absolute inset-0 transition-all duration-[2500ms] ease-out ${index === currentSlide ? "opacity-100 scale-100" : "opacity-0 scale-105"
+              }`}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-white/50 to-white z-10"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent z-10"></div>
-            <img
+            <Image
               src={slide.image}
               alt={slide.title}
+              width={1920}
+              height={1080}
+              priority={index === 0}
+              quality={70}
               className="absolute inset-0 w-full h-full object-cover opacity-60"
             />
           </div>
@@ -146,6 +158,8 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5 animate-[fadeInUp_1.5s_ease-out_0.9s_both]">
             <a
               href="/booking"
+              aria-label="จองคิวตอนนี้"
+              role="button"
               className="group bg-gray-900 text-white px-10 sm:px-16 py-4 sm:py-6 rounded-full text-sm tracking-[0.25em] hover:bg-gray-800 hover:shadow-2xl hover:shadow-gray-900/30 transition-all duration-700 inline-flex items-center gap-4 font-light"
             >
               <Calendar className="w-5 h-5 group-hover:rotate-12 transition-transform duration-700" strokeWidth={1.5} />
@@ -154,6 +168,8 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
             </a>
             <a
               href="/#services"
+              aria-label="ดูบริการทั้งหมด"
+              role="button"
               className="group bg-white/90 backdrop-blur-sm text-gray-900 px-10 sm:px-16 py-4 sm:py-6 rounded-full text-sm tracking-[0.25em] hover:bg-white hover:shadow-xl transition-all duration-700 inline-flex items-center gap-4 font-light border border-gray-200"
             >
               ดูบริการทั้งหมด
@@ -164,12 +180,16 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
 
         <button
           onClick={prevSlide}
+          aria-label="เลื่อนไปภาพก่อนหน้า"
+          title="เลื่อนไปภาพก่อนหน้า"
           className="absolute left-5 sm:left-10 top-1/2 -translate-y-1/2 z-30 bg-white/95 backdrop-blur-md hover:bg-white p-3 sm:p-5 rounded-full transition-all duration-500 hover:scale-110 shadow-xl border border-gray-100/50 group"
         >
           <ChevronLeft className="sm:w-6 sm:h-6 w-3 h-3 text-gray-900 group-hover:-translate-x-0.5 transition-transform duration-500" strokeWidth={1.5} />
         </button>
         <button
           onClick={nextSlide}
+          aria-label="เลื่อนไปภาพถัดไป"
+          title="เลื่อนไปภาพถัดไป"
           className="absolute right-5 top-1/2 -translate-y-1/2 z-30 bg-white/95 backdrop-blur-md hover:bg-white p-3 sm:p-5 rounded-full transition-all duration-500 hover:scale-110 shadow-xl border border-gray-100/50 group"
         >
           <ChevronRight className="sm:w-6 sm:h-6 w-3 h-3 text-gray-900 group-hover:translate-x-0.5 transition-transform duration-500" strokeWidth={1.5} />
@@ -179,13 +199,24 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
           {heroSlides.map((_, index) => (
             <button
               key={index}
+              aria-label={`ไปยังสไลด์ที่ ${index + 1}`}
+              aria-current={index === currentSlide ? "true" : undefined}
               onClick={() => setCurrentSlide(index)}
-              className={`h-2 rounded-full transition-all duration-700 ${
-                index === currentSlide ? "w-12 bg-gray-900" : "w-2 bg-gray-400 hover:bg-gray-600"
-              }`}
-            />
+              className={`relative p-3 flex items-center justify-center rounded-full transition-all duration-700 focus:outline-none ${index === currentSlide
+                  ? "bg-transparent"
+                  : "bg-transparent hover:bg-transparent"
+                }`}
+            >
+              <span
+                className={`block rounded-full transition-all duration-700 ${index === currentSlide
+                    ? "w-12 h-2 bg-gray-900"
+                    : "w-2 h-2 bg-gray-400 hover:bg-gray-600"
+                  }`}
+              ></span>
+            </button>
           ))}
         </div>
+
       </div>
 
       {/* Services Section */}
@@ -196,9 +227,8 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
         <div className="max-w-7xl mx-auto sm:px-8 px-4 relative z-10">
           <div
             id="anim-services"
-            className={`text-center sm:mb-28 mb-14 transition-all duration-1200 ${
-              isVisible["anim-services"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
-            }`}
+            className={`text-center sm:mb-28 mb-14 transition-all duration-1200 ${isVisible["anim-services"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
+              }`}
           >
             <div className="inline-block sm:mb-10 mb-5">
               <Scissors className="w-12 h-12 text-gray-300 mx-auto mb-8 animate-[spin_20s_linear_infinite] [animation-direction:reverse]" strokeWidth={0.7} />
@@ -216,17 +246,20 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
               <div
                 key={index}
                 id={`anim-service-${index}`}
-                className={`group relative bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-1000 border border-gray-100/70 hover:border-gray-200 md:hover:-translate-y-4 ${
-                  isVisible[`anim-service-${index}`] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
-                }`}
+                className={`group relative bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-1000 border border-gray-100/70 hover:border-gray-200 md:hover:-translate-y-4 ${isVisible[`anim-service-${index}`] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
+                  }`}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-900/0 via-gray-900/0 to-gray-900/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none z-10"></div>
 
-                <div className="relative h-44 sm:h-56 md:h-96 overflow-hidden">
-                  <img
+                <div className="relative h-40 sm:h-56 md:h-80 lg:h-96 overflow-hidden rounded-2xl">
+                  <Image
                     src={service.image_url}
                     alt={service.title}
+                    width={800}
+                    height={600}
+                    quality={75}
+                    loading="lazy"
                     className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-[2000ms] ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -249,7 +282,10 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
                     <p className="text-sm sm:text-xl md:text-2xl text-gray-900 font-light tracking-wide">
                       เริ่มต้น {service.price_min} บาท
                     </p>
-                    <button className="text-gray-400 group-hover:text-gray-900 group-hover:translate-x-2 md:group-hover:translate-x-3 transition-all duration-700">
+                    <button
+                      aria-label="ดูเพิ่มเติม"
+                      title="ดูเพิ่มเติม"
+                      className="text-gray-400 group-hover:text-gray-900 group-hover:translate-x-2 md:group-hover:translate-x-3 transition-all duration-700">
                       <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" strokeWidth={1.5} />
                     </button>
                   </div>
@@ -265,9 +301,8 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
         <div className="max-w-7xl mx-auto sm:px-8 px-4 relative z-10">
           <div
             id="anim-reviews"
-            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${
-              isVisible["anim-reviews"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
-            }`}
+            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible["anim-reviews"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
+              }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">Reviews</p>
             <h2 className="text-4xl sm:text-6xl text-gray-900 font-extralight tracking-tight mb-8 leading-none">รีวิวจากลูกค้า</h2>
@@ -281,9 +316,8 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
             {reviews.map((item, index) => (
               <div
                 key={index}
-                className={`bg-gradient-to-br from-gray-50/80 to-white/80 backdrop-blur-sm p-8 sm:p-10 rounded-[2rem] hover:shadow-2xl transition-all duration-1000 border border-gray-100/80 hover:border-gray-200 md:hover:-translate-y-3 text-center shrink-0 w-[85%] sm:w-auto snap-center ${
-                  isVisible["anim-reviews"] ? "opacity-100 scale-100" : "opacity-0 scale-95"
-                }`}
+                className={`bg-gradient-to-br from-gray-50/80 to-white/80 backdrop-blur-sm p-8 sm:p-10 rounded-[2rem] hover:shadow-2xl transition-all duration-1000 border border-gray-100/80 hover:border-gray-200 md:hover:-translate-y-3 text-center shrink-0 w-[85%] sm:w-auto snap-center ${isVisible["anim-reviews"] ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                  }`}
                 style={{ transitionDelay: `${index * 180}ms` }}
               >
                 <div className="flex flex-col items-center mb-8">
@@ -306,9 +340,8 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
         <div className="max-w-7xl mx-auto sm:px-8 px-4 relative z-10">
           <div
             id="anim-stylists-header"
-            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${
-              isVisible["anim-stylists-header"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
-            }`}
+            className={`text-center mb-16 sm:mb-24 transition-all duration-1200 ${isVisible["anim-stylists-header"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
+              }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">Meet Our Team</p>
             <h2 className="text-4xl sm:text-6xl text-gray-900 font-extralight tracking-tight mb-8 leading-none">ช่างผมมืออาชีพ</h2>
@@ -326,25 +359,25 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
                   <div
                     key={index}
                     onClick={() => handleToggle(index)}
-                    className={`group text-center flex-shrink-0 w-[250px] sm:w-[300px] snap-center transition-all duration-700 ${
-                      isVisible[`anim-stylist-${index}`] ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
-                    }`}
+                    className={`group text-center flex-shrink-0 w-[250px] sm:w-[300px] snap-center transition-all duration-700 ${isVisible[`anim-stylist-${index}`] ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+                      }`}
                   >
-                    <div className="relative mb-8 overflow-hidden rounded-[2rem] shadow-lg">
-                      <img
+                    <div className="relative mb-8 overflow-hidden rounded-[1.5rem] shadow-lg">
+                      <Image
                         src={stylist.image_url}
                         alt={stylist.name}
-                        className={`w-full h-[400px] object-cover transition-all duration-[1500ms] ease-out ${
-                          isActive ? "scale-105 grayscale-0" : "grayscale group-hover:grayscale-0 group-hover:scale-105"
-                        }`}
+                        width={500}
+                        height={400}
+                        quality={75}
+                        loading="lazy"
+                        className={`w-full h-[320px] sm:h-[380px] object-cover transition-all duration-[1500ms] ease-out ${isActive ? "scale-105 grayscale-0" : "grayscale group-hover:grayscale-0 group-hover:scale-105"
+                          }`}
                       />
-                      <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-700 ${
-                        isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                      }`}></div>
+                      <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-700 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                        }`}></div>
 
-                      <div className={`absolute bottom-0 left-0 right-0 p-6 transition-transform duration-700 ${
-                        isActive ? "translate-y-0" : "translate-y-full group-hover:translate-y-0"
-                      }`}>
+                      <div className={`absolute bottom-0 left-0 right-0 p-6 transition-transform duration-700 ${isActive ? "translate-y-0" : "translate-y-full group-hover:translate-y-0"
+                        }`}>
                         <div className="bg-white/98 backdrop-blur-xl rounded-[1.5rem] p-6 border border-gray-100/80 shadow-2xl">
                           <h3 className="text-2xl text-gray-900 mb-2 font-extralight tracking-wide">{stylist.name}</h3>
                           <p className="text-gray-600 text-sm mb-1 font-light tracking-wider">{stylist.specialty}</p>
@@ -369,16 +402,19 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
             {stylists.map((stylist: any, index: number) => (
               <div
                 key={index}
-                className={`group text-center transition-all duration-1000 ${
-                  isVisible[`anim-stylist-${index}`] ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
-                }`}
+                className={`group text-center transition-all duration-1000 ${isVisible[`anim-stylist-${index}`] ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+                  }`}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
                 <div className="relative mb-10 overflow-hidden rounded-[2rem] shadow-lg">
-                  <img
+                  <Image
                     src={stylist.image_url}
                     alt={stylist.name}
-                    className="w-full h-[600px] object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[1500ms] ease-out"
+                    width={800}
+                    height={500}
+                    quality={75}
+                    loading="lazy"
+                    className="w-full h-[480px] object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[1500ms] ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
 
@@ -408,9 +444,8 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
         <div className="max-w-7xl mx-auto sm:px-8 px-4">
           <div
             id="anim-gallery-header"
-            className={`text-center mb-24 transition-all duration-1200 ${
-              isVisible["anim-gallery-header"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
-            }`}
+            className={`text-center mb-24 transition-all duration-1200 ${isVisible["anim-gallery-header"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
+              }`}
           >
             <p className="text-gray-400 text-[10px] sm:text-xs tracking-[0.5em] mb-10 font-light uppercase">Portfolio</p>
             <h2 className="text-4xl sm:text-6xl text-gray-900 font-extralight tracking-tight mb-8 leading-none">ผลงานของเรา</h2>
@@ -426,33 +461,27 @@ export default function HomeClient({ services, stylists, reviews }: Props) {
                 key={index}
                 onClick={() => setSelectedImage(image)}
                 id={`anim-gallery-${index}`}
-                className={`relative aspect-square overflow-hidden group transition-all duration-1000 rounded-[1.5rem] shadow-lg cursor-pointer ${
-                  isVisible[`anim-gallery-${index}`] ? "opacity-100 scale-100" : "opacity-0 scale-90"
-                }`}
+                className={`relative aspect-square overflow-hidden group transition-all duration-1000 rounded-[1.5rem] shadow-lg cursor-pointer ${isVisible[`anim-gallery-${index}`] ? "opacity-100 scale-100" : "opacity-0 scale-90"
+                  }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <img
+                <Image
                   src={image}
                   alt={`Gallery ${index + 1}`}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2000ms] ease-out"
+                  width={800}
+                  height={800}
+                  quality={85}
+                  loading="lazy"
+                  sizes="(max-width: 640px) 48vw, (max-width: 1024px) 30vw, (max-width: 1536px) 22vw, 400px"
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-[2000ms] ease-out rounded-[1.5rem]"
                 />
+                {/* Overlay gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
 
+                {/* Zoom icon */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700">
                   <div className="bg-white/95 backdrop-blur-md w-20 h-20 rounded-full flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-all duration-700 border border-gray-100">
-                    <svg
-                      className="w-8 h-8 text-gray-900"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                      />
-                    </svg>
+                    <Search className="w-8 h-8 text-gray-900" />
                   </div>
                 </div>
               </div>

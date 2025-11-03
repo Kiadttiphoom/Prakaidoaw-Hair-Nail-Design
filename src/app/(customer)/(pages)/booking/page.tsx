@@ -7,19 +7,30 @@ import { useSystem } from "@/context/SystemContext";
 import { usePopupMessenger } from "@/context/PopupCustomerContext";
 
 export default function BookingPage() {
+  // ดึงฟังก์ชันจาก context ที่ใช้ popup แสดงข้อความ
   const { showPopup, closePopup } = usePopupMessenger();
   const { system } = useSystem();
+
+  // State พื้นฐานสำหรับ UI และ logic ต่าง ๆ
   const [loading, setLoading] = useState(true);
   const [spin, setSpin] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [popupAuth, setPopupAuth] = useState(false);
   const [popupMessenger_confirm, setPopupMessenger_confirm] = useState(false);
+
+  // เก็บข้อมูลจาก backend
   const [services, setServices] = useState<any[]>([]);
   const [stylists, setstylists] = useState<any[]>([]);
   const [timeSlots, setTimeSlots] = useState<any[]>([]);
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
+
+  // ขั้นตอนการจองคิว
   const [step, setStep] = useState(1);
+
+  // dropdown สำหรับคำนำหน้า (เช่น นาย / นางสาว)
   const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
+
+  // เก็บค่าฟอร์มการจองทั้งหมด
   const [formData, setFormData] = useState({
     stylist: "",
     service: "",
@@ -33,58 +44,60 @@ export default function BookingPage() {
     note: ""
   });
 
+
+  // ปิด dropdown คำนำหน้าเมื่อคลิกนอกบริเวณ
   useEffect(() => {
-  function handleClickOutside(e: MouseEvent) {
-    if (showPrefixDropdown) {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.relative')) {
-        setShowPrefixDropdown(false);
+    function handleClickOutside(e: MouseEvent) {
+      if (showPrefixDropdown) {
+        const target = e.target as HTMLElement;
+        if (!target.closest(".relative")) {
+          setShowPrefixDropdown(false);
+        }
       }
     }
-  }
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, [showPrefixDropdown]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPrefixDropdown]);
 
+
+  // โหลดข้อมูลช่าง + ตรวจสอบการล็อกอิน
   useEffect(() => {
     setLoading(true);
 
     Promise.allSettled([
-      fetch("/api/stylists").then((res) => res.json()),
-      fetch("/api/auth", { method: "POST", credentials: "include" })
+      fetch("/api/stylists").then((res) => res.json()), // ดึงรายชื่อช่าง
+      fetch("/api/auth", { method: "POST", credentials: "include" }) // ตรวจสอบ token
         .then(async (res) => {
           const data = await res.json();
           return { status: res.status, data };
         }),
     ])
       .then(([stylistsResult, authResult]) => {
-
-        // ✅ stylists
+        // ✅ โหลดข้อมูลช่าง
         if (stylistsResult.status === "fulfilled") {
-          // เซ็ตข้อมูล stylists ก่อน
           setstylists(stylistsResult.value.data.stylists);
         }
 
-        // ✅ auth
+        // ✅ ตรวจสอบการล็อกอิน
         if (authResult.status === "fulfilled") {
           const { status, data } = authResult.value;
-
           if (status === 200 && data.message === "Success") {
             setLoading(false);
             setPopupAuth(false);
           } else {
             setPopupAuth(true);
           }
-
         } else {
           setPopupAuth(true);
         }
       })
-      .catch((err) => {
+      .catch(() => {
         setPopupAuth(true);
       });
   }, []);
 
+
+  // ถ้ามี popupAuth จะปิด scroll ของ body
   useEffect(() => {
     if (popupAuth) {
       document.body.style.overflow = "hidden";
@@ -94,39 +107,36 @@ export default function BookingPage() {
   }, [popupAuth]);
 
 
+  // เข้าสู่ระบบผ่าน LINE Login
   const handleLineLogin = () => {
     const clientId = process.env.NEXT_PUBLIC_LINE_CHANNEL_ID!;
     const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_LINE_CALLBACK_URL!);
-
-    // 👉 เก็บ path ปัจจุบัน (เช่น /home, /services, /booking)
     const currentPath = window.location.pathname;
-    const state = encodeURIComponent(currentPath); // ปลอดภัยกับ URL ที่มี /
-
+    const state = encodeURIComponent(currentPath); // เพื่อกลับมาหน้าเดิมหลัง login
     const scope = "profile openid email";
 
-    // 👉 ส่ง state ไปด้วย เพื่อให้ callback รู้ว่าต้องกลับมาหน้าไหน
     window.location.href = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
   };
 
 
+  // ขั้นตอนกดปุ่ม "ถัดไป / ยืนยัน" ในแต่ละ step
   const handleSubmit = async () => {
     setDisabled(true);
 
     try {
+      // STEP 1 > เลือกช่าง
       if (step === 1) {
-        // ✅ ตรวจสอบบริการของช่าง
         const res = await fetch(`/api/booking`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ step: step, payload: formData.stylist }),
           credentials: "include"
         });
-        if(res.status === 401){
+
+        if (res.status === 401) {
           showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
           setDisabled(false);
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 1000);
+          setTimeout(() => window.location.href = "/", 1000);
           return;
         }
 
@@ -139,32 +149,43 @@ export default function BookingPage() {
           alert("ช่างคนนี้ยังไม่พร้อมให้บริการ กรุณาเลือกใหม่");
         }
       }
+
+      // STEP 2 > เลือกบริการ
       else if (step === 2) {
         const res = await fetch(`/api/booking`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ step: step, payload: { stylist: formData.stylist, service: formData.service } }),
+          body: JSON.stringify({
+            step: step,
+            payload: { stylist: formData.stylist, service: formData.service }
+          }),
           credentials: "include"
         });
-        if(res.status === 401){
+
+        if (res.status === 401) {
           showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
           setDisabled(false);
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 1000);
+          setTimeout(() => window.location.href = "/", 1000);
           return;
         }
+
         const data = await res.json();
-        //console.log(data);
         if (data.message === "success") {
           setStep(3);
         } else {
           setStep(2);
           alert("ช่างคนนี้ยังไม่พร้อมให้บริการ กรุณาเลือกใหม่");
         }
-      } else if (step === 3) {
+      }
+
+      // STEP 3 > เลือกวันเวลา
+      else if (step === 3) {
         setStep(4);
-      } else if (step === 4) {
+      }
+
+      // STEP 4 > กรอกข้อมูลลูกค้า
+      else if (step === 4) {
+        // ตรวจสอบ validation
         if (formData.prefix === "") {
           showPopup("warning", "กรุณากรอกคำนำหน้า");
           return;
@@ -172,98 +193,106 @@ export default function BookingPage() {
         if (formData.firstName === "") {
           showPopup("warning", "กรุณากรอกชื่อ");
           return;
-        } 
+        }
         if (formData.lastName === "") {
           showPopup("warning", "กรุณากรอกนามสกุล");
           return;
-        } 
+        }
         if (formData.phone.trim() === "") {
           showPopup("warning", "กรุณากรอกเบอร์โทรศัพท์");
           return;
-        } 
+        }
         if (formData.phone.trim().length < 10) {
-            showPopup("warning", "กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก");
-            return;   
-        } 
+          showPopup("warning", "กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก");
+          return;
+        }
         if (formData.phone.trim() !== "") {
           const isValidPhone = /^((\+66)|0)[0-9]{9}$/.test(formData.phone.trim());
-
           if (!isValidPhone) {
             showPopup("warning", "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (เช่น 0812345678)");
             return;
           }
         }
         if (formData.email.trim() !== "") {
-          const rfc5322EmailRegex = /(?:[a-z0-9!#$%&'*+\x2f=?^_`\x7b-\x7d~\x2d]+(?:\.[a-z0-9!#$%&'*+\x2f=?^_`\x7b-\x7d~\x2d]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9\x2d]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\x2d]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9\x2d]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i;
+          // ตรวจสอบอีเมล RFC5322
+          const rfc5322EmailRegex =
+            /(?:[a-z0-9!#$%&'*+\x2f=?^_`\x7b-\x7d~\x2d]+(?:\.[a-z0-9!#$%&'*+\x2f=?^_`\x7b-\x7d~\x2d]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9\x2d]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\x2d]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9\x2d]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i;
           if (!rfc5322EmailRegex.test(formData.email.trim())) {
             showPopup("warning", "กรุณากรอกอีเมลให้ถูกต้อง");
             return;
           }
         }
 
+        // แสดง popup ยืนยันก่อนส่งจริง
         setPopupMessenger_confirm(true);
-        
       }
     } catch {
-
+      // ไม่ต้อง handle error อะไรเพิ่ม
     } finally {
-
-      setDisabled(false)
+      setDisabled(false);
     }
   };
 
-  const handleConfirm = async (confirm : boolean) => {
-    if(confirm){
+
+  // เมื่อผู้ใช้กดยืนยันการจอง
+  const handleConfirm = async (confirm: boolean) => {
+    if (confirm) {
       setDisabled(true);
-        const res = await fetch(`/api/booking`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ step: step, payload: formData }),
-        });
-        if(res.status === 401){
-          showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง"); 
-          setDisabled(false);
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 1000);
-          return;
-        }
-        const result = await res.json();
 
-        if (result.message === "success") {
-          setPopupMessenger_confirm(false);
-          showPopup("success", "จองคิวสำเร็จ");
-          setFormData((prev) => ({
-            ...prev,
-            stylist: "",
-            service: "",
-            date: "",
-            time: "",
-            name: "",
-            phone: "",
-            email: "",
-            note: ""
-          }));
-          setSpin(true);
-          setTimeout(function () {
-            window.location.href = "/booking";
-          }, 2000);
+      const res = await fetch(`/api/booking`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ step: step, payload: formData }),
+      });
 
-        } else {
-          setDisabled(false);
-          setPopupMessenger_confirm(false);
-          showPopup("error", "เกิดข้อผิดพลาด โปรดลองอีกครั้ง");
-        }
+      if (res.status === 401) {
+        showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+        setDisabled(false);
+        setTimeout(() => window.location.href = "/", 1000);
+        return;
+      }
+
+      const result = await res.json();
+
+      if (result.message === "success") {
+        // จองสำเร็จ
+        setPopupMessenger_confirm(false);
+        showPopup("success", "จองคิวสำเร็จ");
+
+        // รีเซ็ตข้อมูลฟอร์ม
+        setFormData((prev) => ({
+          ...prev,
+          stylist: "",
+          service: "",
+          date: "",
+          time: "",
+          name: "",
+          phone: "",
+          email: "",
+          note: ""
+        }));
+
+        // แสดง spin loading ก่อน redirect
+        setSpin(true);
+        setTimeout(() => window.location.href = "/booking", 2000);
+      } else {
+        setDisabled(false);
+        setPopupMessenger_confirm(false);
+        showPopup("error", "เกิดข้อผิดพลาด โปรดลองอีกครั้ง");
+      }
     }
-  }
+  };
 
+
+  // ดึงเวลาที่ว่าง เมื่อวันที่เปลี่ยน
   useEffect(() => {
-    // ถ้ายังไม่เลือกวันหรือยังไม่มีช่าง/บริการ ไม่ต้อง fetch
     if (!formData.date || !formData.stylist || !formData.service) return;
     fetchAvailableTimes();
-  }, [formData.date]); // ✅ เมื่อวันที่เปลี่ยน จะดึงเวลาว่างใหม่
+  }, [formData.date]);
 
+
+  // ดึงเวลาที่ว่างจาก backend
   const fetchAvailableTimes = async () => {
     setSpin(true);
     try {
@@ -279,49 +308,50 @@ export default function BookingPage() {
           },
         }),
       });
-      if(res.status === 401){
-          showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
-          setDisabled(false);
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 1000);
-          return;
-        }
+
+      if (res.status === 401) {
+        showPopup("error", "กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+        setDisabled(false);
+        setTimeout(() => window.location.href = "/", 1000);
+        return;
+      }
+
       const data = await res.json();
       if (data.message === "success") {
         setSpin(false);
         setTimeSlots(data.data.timeSlots || []);
         setBookedTimes(data.data.bookedTimes || []);
       }
-    } catch (err) {
+    } catch {
       setSpin(false);
-      //console.error("Error fetching times:", err);
     }
   };
 
+
+  // เปลี่ยนขั้นตอน (step)
   const handleStep = (nextStep: number) => {
-    // ถ้ากำลังจะเปลี่ยนจาก step ที่เกี่ยวกับวันเวลา (3) → step อื่น
     if (step === 3 || nextStep === 3) {
       setFormData((prev) => ({
         ...prev,
         date: "",
-        time: "", // ✅ เผื่อไว้ให้ล้างเวลาที่เลือกด้วย
+        time: "",
       }));
-      setTimeSlots([]); // ✅ ล้างเวลาว่างทั้งหมด
+      setTimeSlots([]);
     }
-
-    // อัปเดตขั้นตอน
     setStep(nextStep - 1);
   };
 
 
+  // ตรวจสอบว่าผ่าน step นี้ได้ไหม
   const canProceed = () => {
     if (step === 1) return formData.stylist;
     if (step === 2) return formData.service;
     if (step === 3) return formData.date && formData.time;
-    if (step === 4) return formData.prefix && formData.firstName && formData.lastName && formData.phone;
+    if (step === 4)
+      return formData.prefix && formData.firstName && formData.lastName && formData.phone;
     return false;
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
@@ -421,9 +451,9 @@ export default function BookingPage() {
                 <div className="flex-1">
                   <p className="text-xs text-gray-500 mb-1">วันที่และเวลา</p>
                   <p className="text-sm text-gray-900 font-medium">
-                    {formData.date ? new Date(formData.date + 'T00:00:00').toLocaleDateString('th-TH', { 
-                      year: 'numeric', 
-                      month: 'long', 
+                    {formData.date ? new Date(formData.date + 'T00:00:00').toLocaleDateString('th-TH', {
+                      year: 'numeric',
+                      month: 'long',
                       day: 'numeric',
                       timeZone: 'Asia/Bangkok'
                     }) : "-"} เวลา {formData.time || "-"} น.
@@ -481,35 +511,35 @@ export default function BookingPage() {
                 disabled={disabled}
               >
                 {disabled ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg
-                        className="animate-spin h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0
+                  <span className="flex items-center justify-center gap-2">
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0
                             c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      กำลังยืนยันการจอง...
-                    </span>
-                  ) : (
-                    <>
-                      ยืนยันการจอง
-                    </>
-                  )}
+                      ></path>
+                    </svg>
+                    กำลังยืนยันการจอง...
+                  </span>
+                ) : (
+                  <>
+                    ยืนยันการจอง
+                  </>
+                )}
               </button>
               <button
                 onClick={() => setPopupMessenger_confirm(false)}
@@ -799,7 +829,7 @@ export default function BookingPage() {
                         <User className="w-5 h-5" strokeWidth={1.5} />
                         คำนำหน้า
                       </label>
-                      
+
                       {/* Custom Select */}
                       <div className="relative">
                         <button
@@ -815,11 +845,11 @@ export default function BookingPage() {
                           <span className={formData.prefix ? "text-gray-900" : "text-gray-400"}>
                             {formData.prefix || "เลือกคำนำหน้า"}
                           </span>
-                          <svg 
+                          <svg
                             className={`w-5 h-5 text-gray-400 transition-transform ${showPrefixDropdown ? 'rotate-180' : ''}`}
-                            fill="none" 
-                            strokeWidth="2" 
-                            stroke="currentColor" 
+                            fill="none"
+                            strokeWidth="2"
+                            stroke="currentColor"
                             viewBox="0 0 24 24"
                           >
                             <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" />
@@ -829,7 +859,7 @@ export default function BookingPage() {
                         {/* Dropdown Menu */}
                         {showPrefixDropdown && (
                           <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-200 rounded-2xl shadow-xl overflow-hidden">
-                            {["นาย", "นาง", "นางสาว", "เด็กชาย", "เด็กหญิง","Mr.", "Mrs.", "Ms.", "Master", "Miss"].map((prefix) => (
+                            {["นาย", "นาง", "นางสาว", "เด็กชาย", "เด็กหญิง", "Mr.", "Mrs.", "Ms.", "Master", "Miss"].map((prefix) => (
                               <button
                                 key={prefix}
                                 type="button"
@@ -839,10 +869,9 @@ export default function BookingPage() {
                                 }}
                                 className={`
                                   w-full px-5 py-3 text-left font-light transition-all cursor-pointer
-                                  ${
-                                    formData.prefix === prefix
-                                      ? "bg-gray-900 text-white"
-                                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                  ${formData.prefix === prefix
+                                    ? "bg-gray-900 text-white"
+                                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                                   }
                                 `}
                               >
