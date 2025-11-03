@@ -6,20 +6,10 @@ const nextConfig: NextConfig = {
   compiler: {
     reactRemoveProperties: true,
   },
-
-  // ✅ ตัด polyfill / ทำ tree-shake ไอคอน
   modularizeImports: {
     "lucide-react": {
       transform: "lucide-react/{{member}}",
     },
-  },
-
-  // ⚙️ ปิด optimizeCss เพื่อให้ build บน Vercel ผ่าน
-  // (Lightning CSS ยังไม่พร้อมในบางสภาพแวดล้อม)
-  // หากรันบนเครื่องเองอยากเปิดเพิ่ม performance ได้เล็กน้อย
-  // ก็เปิดกลับได้โดยเพิ่มบรรทัด optimizeCss: true
-  experimental: {
-    optimizePackageImports: ["lucide-react"], // ใช้แทน optimizeCss เพื่อ reduce JS bundle
   },
 
   images: {
