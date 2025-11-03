@@ -38,7 +38,7 @@ export default async function BookingPage() {
       />
     );
   } catch (err) {
-    console.error("SSR booking error:", err);
+    //console.error("SSR booking error:", err);
     return <BookingClient stylists={[]} isAuth={false} />;
   }
 }

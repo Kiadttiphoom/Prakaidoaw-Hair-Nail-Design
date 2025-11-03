@@ -44,7 +44,7 @@ export default async function CustomerLayout({
     const data = await res.json();
     systemData = data.data;
   } catch (err) {
-    console.error("Failed to fetch system data:", err);
+    //console.error("Failed to fetch system data:", err);
   }
 
   return (

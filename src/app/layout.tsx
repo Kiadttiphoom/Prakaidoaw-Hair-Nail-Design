@@ -6,6 +6,8 @@ import "./globals.css";
 const notoThai = Noto_Sans_Thai({
   subsets: ["thai"],
   weight: ["300"],
+  display: "swap",   
+  preload: true,
 });
 
 export const metadata: Metadata = {

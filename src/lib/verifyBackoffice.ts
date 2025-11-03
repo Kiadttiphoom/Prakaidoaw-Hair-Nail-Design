@@ -41,7 +41,7 @@ export async function verifyBackoffice() {
     return { authorized: true, user: decoded, data: check[0] };
 
   } catch (err) {
-    console.error("verifyUser error:", err);
+    //console.error("verifyUser error:", err);
     return { authorized: false, message: "Invalid token" };
   }
 }

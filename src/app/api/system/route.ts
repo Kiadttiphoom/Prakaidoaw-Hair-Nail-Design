@@ -25,7 +25,7 @@ export async function GET() {
       data: system,
     });
   } catch (err: any) {
-    //console.error("❌ Error fetching system info:", err);
+    console.error("❌ Error fetching system info:", err);
     return NextResponse.json(
       { message: "error", error: err.message },
       { status: 500 }

@@ -2,9 +2,23 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+
   compiler: {
     reactRemoveProperties: true,
   },
+
+  // ใช้เฉพาะ ES2020+ (ไม่ transpile ไป ES5 → ตัด polyfill 10 KB+)
+  // Tree-shake ไอคอน lucide-react เพื่อลด JS bundle
+  modularizeImports: {
+    "lucide-react": {
+      transform: "lucide-react/{{member}}",
+    },
+  },
+
+  experimental: {
+    optimizeCss: true, // เปิด SWC optimizer ตัวใหม่ของ Next 15
+  },
+
   images: {
     remotePatterns: [
       {

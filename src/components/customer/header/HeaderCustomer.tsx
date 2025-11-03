@@ -50,7 +50,7 @@ export default function HeaderCustomer() {
     try {
       await fetch("/api/line/logout", { method: "POST" });
     } catch (err) {
-      //console.error("Logout error:", err);
+      console.error("Logout error:", err);
     } finally {
       window.location.href = "/";
     }

@@ -25,10 +25,10 @@ export default function SidebarAdmin() {
       if (res.ok) {
         window.location.href = "/admin/login";
       } else {
-        console.error("Logout failed:", await res.text());
+        //console.error("Logout failed:", await res.text());
       }
     } catch (err) {
-      console.error("Network error during logout:", err);
+      //console.error("Network error during logout:", err);
     }
   }
 

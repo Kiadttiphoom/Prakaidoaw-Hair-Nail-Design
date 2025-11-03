@@ -21,7 +21,7 @@ export default async function BookingHistoryPage() {
         "Content-Type": "application/json",
         Cookie: cookieHeader,
       },
-      next: { revalidate: 60 },
+      cache: "no-store",
     }
   );
 

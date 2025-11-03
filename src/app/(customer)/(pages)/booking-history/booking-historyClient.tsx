@@ -1,22 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
 import {
-  Scissors,
-  Star,
   Calendar,
-  ChevronLeft,
-  ChevronRight,
   Sparkles,
-  ArrowRight,
-  Clock,
   User,
   Phone,
-  DollarSign,
   FileText,
   CheckCircle,
   XCircle,
   AlertCircle,
-  Mail
 } from "lucide-react";
 import { useSystem } from "@/context/SystemContext";
 import BookingHistorySkeleton from "@/components/UI/customer/Skeleton/BookingHistorySkeleton";
@@ -34,12 +26,8 @@ export default function BookingHistoryClient({ bookinghistory }: Props) {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    // จำลองโหลดข้อมูล (ถ้า bookinghistory มาช้า)
-    const timer = setTimeout(() => {
-      setData(bookinghistory);
-      setLoading(false);
-    }, 500); // ปล่อยให้ skeleton แสดงสักครู่
-    return () => clearTimeout(timer);
+    setData(bookinghistory);
+    setLoading(false);
   }, [bookinghistory]);
 
   const getStatusConfig = (status: string) => {
@@ -87,13 +75,6 @@ export default function BookingHistoryClient({ bookinghistory }: Props) {
     }
   };
 
-  const getPaymentStatus = (status: string) => {
-    if (status === "success") {
-      return { label: "ชำระแล้ว", color: "text-green-600" };
-    }
-    return { label: "รอชำระ", color: "text-orange-600" };
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white mt-20">
       {loading ? (
@@ -136,7 +117,7 @@ export default function BookingHistoryClient({ bookinghistory }: Props) {
     return (
       <div
         key={index}
-        className="bg-white rounded-xl lg:rounded-2xl border border-gray-200/60 p-3 lg:p-5 shadow-sm hover:shadow-md transition-all duration-300"
+        className="bg-white rounded-xl lg:rounded-2xl border border-gray-200/60 p-3 lg:p-5 shadow-sm hover:shadow-md transition-shadow duration-200"
       >
         {/* Header with Status */}
         <div className="flex items-start justify-between mb-3 lg:mb-4 pb-3 lg:pb-4 border-b border-gray-200/60">

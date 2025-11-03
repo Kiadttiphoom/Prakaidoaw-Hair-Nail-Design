@@ -59,7 +59,7 @@ export function SystemProvider({
         setSystem(sys);
         sessionStorage.setItem("system_data", JSON.stringify(sys));
       } catch (err) {
-        console.error("โหลดข้อมูล system ไม่ได้:", err);
+        //console.error("โหลดข้อมูล system ไม่ได้:", err);
       }
     };
 

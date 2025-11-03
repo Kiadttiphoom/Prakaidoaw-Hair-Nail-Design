@@ -62,8 +62,8 @@ export async function POST(req: Request) {
     // ✅ STEP 3: payload ก็จะเป็น stylist_id เช่นกัน
     if (step === 3) {
       const { stylist_id, service_id, date } = payload;
-      console.log("===================================");
-      console.log("payload :", stylist_id, service_id, date);
+     // //console.log("===================================");
+      //console.log("payload :", stylist_id, service_id, date);
 
       const promisePool = mysqlPool.promise();
 
@@ -76,8 +76,8 @@ export async function POST(req: Request) {
 
       const open_time = system[0].open_time;
       const close_time = system[0].close_time;
-      console.log("open_time :", open_time);
-      console.log("close_time :", close_time);
+      //console.log("open_time :", open_time);
+      //console.log("close_time :", close_time);
 
       // 2️⃣ ข้อมูลบริการ
       const [services] = await promisePool.query<any[]>(
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
 
       const duration_min = services[0].duration_min;
 
-      console.log("duration_min :", duration_min);
+      //console.log("duration_min :", duration_min);
 
       // 3️⃣ ดึง booking ของวันนั้น
       const [bookings] = await promisePool.query<any[]>(
@@ -143,8 +143,8 @@ export async function POST(req: Request) {
         }
       }
 
-      console.log("timeSlots :", slots);
-      console.log("===================================");
+      //console.log("timeSlots :", slots);
+      //console.log("===================================");
 
       return NextResponse.json({
         message: "success",
@@ -154,7 +154,7 @@ export async function POST(req: Request) {
 
     // ✅ STEP 3: payload ต้องเป็น object อยู่ดี (ข้อมูลหลายช่อง)
     if (step === 4) {
-      console.log(payload);
+      //console.log(payload);
       const { stylist, service, date, time, prefix, firstName, lastName, phone, email, note } = payload;
 
       const name = prefix + firstName + " " + lastName;
@@ -449,7 +449,7 @@ export async function POST(req: Request) {
 
         if (!lineRes.ok) {
           const errorText = await lineRes.text();
-          console.error("❌ ส่งข้อความเข้า LINE Bot ไม่สำเร็จ:", errorText);
+          //console.error("❌ ส่งข้อความเข้า LINE Bot ไม่สำเร็จ:", errorText);
 
           // ❌ ถ้า LINE ล้มเหลว → อัปเดต line_status = 'failed'
           await promisePool.query(
@@ -457,14 +457,14 @@ export async function POST(req: Request) {
             [errorText, booking_code]
           );
         } else {
-          console.log("✅ LINE ส่งสำเร็จ");
+          //console.log("✅ LINE ส่งสำเร็จ");
           await promisePool.query(
             `UPDATE booking SET line_status = 'success', line_error = NULL WHERE booking_code = ?`,
             [booking_code]
           );
         }
       } catch (err: any) {
-        console.error("❌ LINE push error:", err);
+        //console.error("❌ LINE push error:", err);
         await promisePool.query(
           `UPDATE booking SET line_status = 'failed', line_error = ? WHERE booking_code = ?`,
           [err.message, booking_code]
@@ -479,7 +479,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "error", error: "Invalid step" }, { status: 400 });
   } catch (err: any) {
-    console.error("Booking error:", err);
+    //console.error("Booking error:", err);
     return NextResponse.json({ message: "error", error: err.message }, { status: 500 });
   }
 }
