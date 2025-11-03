@@ -7,16 +7,19 @@ const nextConfig: NextConfig = {
     reactRemoveProperties: true,
   },
 
-  // ใช้เฉพาะ ES2020+ (ไม่ transpile ไป ES5 → ตัด polyfill 10 KB+)
-  // Tree-shake ไอคอน lucide-react เพื่อลด JS bundle
+  // ✅ ตัด polyfill / ทำ tree-shake ไอคอน
   modularizeImports: {
     "lucide-react": {
       transform: "lucide-react/{{member}}",
     },
   },
 
+  // ⚙️ ปิด optimizeCss เพื่อให้ build บน Vercel ผ่าน
+  // (Lightning CSS ยังไม่พร้อมในบางสภาพแวดล้อม)
+  // หากรันบนเครื่องเองอยากเปิดเพิ่ม performance ได้เล็กน้อย
+  // ก็เปิดกลับได้โดยเพิ่มบรรทัด optimizeCss: true
   experimental: {
-    optimizeCss: true, // เปิด SWC optimizer ตัวใหม่ของ Next 15
+    optimizePackageImports: ["lucide-react"], // ใช้แทน optimizeCss เพื่อ reduce JS bundle
   },
 
   images: {
